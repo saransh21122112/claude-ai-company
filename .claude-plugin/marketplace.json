@@ -1,0 +1,13 @@
+{
+  "name": "ai-company-local",
+  "owner": {
+    "name": "Saransh"
+  },
+  "plugins": [
+    {
+      "name": "ai-company",
+      "source": "./plugins/ai-company",
+      "description": "In-house AI company department agents"
+    }
+  ]
+}
