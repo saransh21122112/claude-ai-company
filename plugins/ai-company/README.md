@@ -115,6 +115,15 @@ Update `Company/Priorities.md` and `Company/Projects.md` (in Obsidian, or by
 asking `/ops`) as your actual work changes — agents read these live, so
 keeping them current is what makes output relevant instead of generic.
 
+**Each person using this plugin needs their own vault with their own company
+data** — this repo doesn't ship anyone's actual Mission/Priorities/Projects
+content, only a starter you fill in yourself, at [`vault-template/`](../../vault-template)
+(repo root, one level up from this plugin). Copy `vault-template/Company/`
+into your own vault, fill in `Mission.md`/`Priorities.md`/`Projects.md`, and
+duplicate `Departments/_TEMPLATE.md` per department per the mapping table
+inside it (or skip department files entirely at first — agents degrade
+gracefully and just say so if one's missing).
+
 ## One-time setup required
 
 This plugin needs the Obsidian app running with the vault open and the
@@ -122,10 +131,12 @@ This plugin needs the Obsidian app running with the vault open and the
 trusts and runs community plugins after an explicit in-app confirmation
 (this can't be scripted):
 
-1. Open Obsidian (already installed, vault already created and pointed at
-   `~/Documents/AI-Company-Vault`, plugin files already placed).
+1. Open Obsidian (install it, create a vault, point it wherever you like —
+   e.g. `~/Documents/AI-Company-Vault` — and copy `vault-template/Company/`
+   from this repo into it as your starting point).
 2. Settings → Community plugins → if prompted, click **"Turn on community
-   plugins"**, then confirm **"Local REST API with MCP"** is enabled.
+   plugins"**, then install/confirm **"Local REST API with MCP"** is
+   enabled.
 3. Open the plugin's settings tab, copy the generated **API key**.
 4. Set it as an environment variable before launching `claude`:
    `export OBSIDIAN_API_KEY="<the key>"` (add to your shell profile so it
