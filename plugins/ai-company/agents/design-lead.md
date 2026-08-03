@@ -39,7 +39,7 @@ new one without reason.
 1. Understand the request against the actual project it targets (check
    `Company/Projects.md` for context).
 2. **Log activity.** Before starting substantive work, append one line to
-   `~/Projects/company-graph/activity-log.jsonl` (create the file if it
+   `/Users/saransh/vs code/claude_code_ai_company/plugins/ai-company/activity-log.jsonl` (this path has a space in it — always double-quote it in any shell/Bash command, e.g. append via `>> "/Users/saransh/vs code/claude_code_ai_company/plugins/ai-company/activity-log.jsonl"`) (create the file if it
    doesn't exist) recording `{ts, agent: "design-lead", department:
    "Design", project, task, status: "started"}` — a plain JSON object on
    its own line, nothing fancier. When you finish (or pause per

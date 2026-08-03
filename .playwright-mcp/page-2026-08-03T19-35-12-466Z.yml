@@ -1,0 +1,104 @@
+- generic [active] [ref=f5e1]:
+  - main [ref=f5e2]:
+    - paragraph [ref=f5e3]: Features
+    - heading "Seven department agents. One chokepoint they all run through." [level=1] [ref=f5e4]
+    - paragraph [ref=f5e5]: Every action any agent attempts — before it runs, not after — passes through the same pipeline, in this order. Nothing skips a step, and no per-department setting can widen the hard-coded rules.
+    - generic [ref=f5e6]:
+      - paragraph [ref=f5e7]: The pipeline
+      - list [ref=f5e8]:
+        - listitem [ref=f5e9]:
+          - generic [ref=f5e10]: "1"
+          - generic [ref=f5e11]:
+            - paragraph [ref=f5e12]: Kill switch
+            - paragraph [ref=f5e13]: Org-wide or per-department. Blocks everything instantly.
+        - listitem [ref=f5e14]:
+          - generic [ref=f5e15]: "2"
+          - generic [ref=f5e16]:
+            - paragraph [ref=f5e17]: Department on/off
+            - paragraph [ref=f5e18]: A department not turned on does nothing at all.
+        - listitem [ref=f5e19]:
+          - generic [ref=f5e20]: "3"
+          - generic [ref=f5e21]:
+            - paragraph [ref=f5e22]: Autonomy level
+            - paragraph [ref=f5e23]: Off, drafts-only, or bounded-autonomous — set per department, changeable any time.
+        - listitem [ref=f5e24]:
+          - generic [ref=f5e25]: "4"
+          - generic [ref=f5e26]:
+            - paragraph [ref=f5e27]: Hard-coded approval rules
+            - paragraph [ref=f5e28]: Irreversible, financial, or legal actions always pause for you. No configuration can widen past this.
+        - listitem [ref=f5e29]:
+          - generic [ref=f5e30]: "5"
+          - generic [ref=f5e31]:
+            - paragraph [ref=f5e32]: Budget cap
+            - paragraph [ref=f5e33]: A spending ceiling with automatic rollover.
+        - listitem [ref=f5e34]:
+          - generic [ref=f5e35]: "6"
+          - generic [ref=f5e36]:
+            - paragraph [ref=f5e37]: Tool allowlist
+            - paragraph [ref=f5e38]: Turn off one specific action without turning off the whole department.
+        - listitem [ref=f5e39]:
+          - generic [ref=f5e40]: "7"
+          - generic [ref=f5e41]:
+            - paragraph [ref=f5e42]: Rate limit
+            - paragraph [ref=f5e43]: Caps how fast a department can act, even inside its budget.
+      - paragraph [ref=f5e44]: Every step — allowed, blocked, or paused for approval — is written to a full activity log.
+    - paragraph [ref=f5e45]: Departments
+    - heading "Turn on what you need. Each one runs at the heat you allow." [level=2] [ref=f5e46]
+    - paragraph [ref=f5e47]: Departments default to off. The gauge below shows the same autonomy readout used in your dashboard — off, drafting, or autonomous.
+    - generic [ref=f5e48]:
+      - generic [ref=f5e49]:
+        - generic [ref=f5e50]:
+          - heading "eng-lead" [level=3] [ref=f5e51]
+          - generic [ref=f5e52]: Drafting
+        - paragraph [ref=f5e57]: Writes and reviews code, fixes bugs, plans technical work.
+      - generic [ref=f5e58]:
+        - generic [ref=f5e59]:
+          - heading "product-lead" [level=3] [ref=f5e60]
+          - generic [ref=f5e61]: Drafting
+        - paragraph [ref=f5e66]: Turns raw ideas into scoped, sequenced work for other departments.
+      - generic [ref=f5e67]:
+        - generic [ref=f5e68]:
+          - heading "researcher" [level=3] [ref=f5e69]
+          - generic [ref=f5e70]: Drafting
+        - paragraph [ref=f5e75]: Market research, competitor analysis, and written content.
+      - generic [ref=f5e76]:
+        - generic [ref=f5e77]:
+          - heading "ops-manager" [level=3] [ref=f5e78]
+          - generic [ref=f5e79]: Drafting
+        - paragraph [ref=f5e84]: "Admin: invoices, contracts, status tracking, company records."
+      - generic [ref=f5e85]:
+        - generic [ref=f5e86]:
+          - heading "design-lead" [level=3] [ref=f5e87]
+          - generic [ref=f5e88]: Drafting
+        - paragraph [ref=f5e93]: Visual and UX work — pages, product UI, brand consistency.
+      - generic [ref=f5e94]:
+        - generic [ref=f5e95]:
+          - heading "data-lead" [level=3] [ref=f5e96]
+          - generic [ref=f5e97]: Drafting
+        - paragraph [ref=f5e102]: Dashboards, metrics definitions, and reporting.
+      - generic [ref=f5e103]:
+        - generic [ref=f5e104]:
+          - heading "sales-lead" [level=3] [ref=f5e105]
+          - generic [ref=f5e106]: Drafting
+        - paragraph [ref=f5e111]: Outreach and marketing copy — and sends it, if you allow that.
+    - paragraph [ref=f5e112]:
+      - text: Plus per-tenant custom agent prompts, so each department acts the way your organization actually works — not a generic default. See
+      - link "how it works" [ref=f5e113] [cursor=pointer]:
+        - /url: /about
+      - text: for the full guardrails writeup, or
+      - link "pricing" [ref=f5e114] [cursor=pointer]:
+        - /url: /pricing
+      - text: for what's in Free vs Pro.
+    - generic [ref=f5e115]:
+      - button "Sign up free" [ref=f5e116] [cursor=pointer]
+      - link [ref=f5e117] [cursor=pointer]:
+        - /url: /
+        - button "Home" [ref=f5e118]
+      - link [ref=f5e119] [cursor=pointer]:
+        - /url: /about
+        - button "How it works" [ref=f5e120]
+      - link [ref=f5e121] [cursor=pointer]:
+        - /url: /pricing
+        - button "Pricing" [ref=f5e122]
+  - button "Open Next.js Dev Tools" [ref=f5e128] [cursor=pointer]
+  - alert [ref=f5e132]

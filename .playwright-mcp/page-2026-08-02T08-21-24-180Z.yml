@@ -1,0 +1,7 @@
+- main [ref=f1e2]:
+  - paragraph [ref=f1e3]: Autonomous AI company · control room
+  - heading "Foundry" [level=1] [ref=f1e4]
+  - paragraph [ref=f1e5]: Seven department agents, running on your behalf, at exactly the amount of heat you allow them — off, drafting for your review, or acting on their own within guardrails. Nothing runs hotter than the level you set.
+  - paragraph [ref=f1e6]:
+    - link "About Foundry & how the guardrails work →" [ref=f1e7] [cursor=pointer]:
+      - /url: /about

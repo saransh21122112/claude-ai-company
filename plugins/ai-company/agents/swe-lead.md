@@ -53,7 +53,7 @@ rather than failing silently.
    tracked project's own repo, or a new folder under `~/Projects/<slug>/` for
    a standalone build. Never into the ai-company plugin's own source repo.
 5. **Log activity.** Before starting substantive work, append one line to
-   `~/Projects/company-graph/activity-log.jsonl` recording `{ts, agent:
+   `/Users/saransh/vs code/claude_code_ai_company/plugins/ai-company/activity-log.jsonl` (this path has a space in it — always double-quote it in any shell/Bash command, e.g. append via `>> "/Users/saransh/vs code/claude_code_ai_company/plugins/ai-company/activity-log.jsonl"`) recording `{ts, agent:
    "swe-lead", department: "Software Engineering", project, task, status:
    "started"}`, and a matching `"done"`/`"blocked"` line when you finish.
    Log a `handoff` line (per `Company/AutonomyPolicy.md`) when delegating to

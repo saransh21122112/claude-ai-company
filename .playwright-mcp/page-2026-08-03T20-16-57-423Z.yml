@@ -1,0 +1,103 @@
+- generic [active] [ref=f10e1]:
+  - generic [ref=f10e3]:
+    - generic [ref=f10e4]:
+      - generic [ref=f10e5]: "["
+      - text: ai-company / control deck
+      - generic [ref=f10e6]: "]"
+    - heading "Agent Graph" [level=1] [ref=f10e7]
+    - paragraph [ref=f10e8]:
+      - text: Every department agent, plotted live. Drag a node, hover for its brief. The feed reads real events appended to
+      - code [ref=f10e9]: plugins/ai-company/activity-log.jsonl
+      - text: as agents work — run
+      - code [ref=f10e10]: /eng
+      - text: or similar to watch it light up.
+    - generic [ref=f10e11]:
+      - generic [ref=f10e12]: 17 agents
+      - generic [ref=f10e13]: 20 links
+      - generic [ref=f10e14]: 1 in flight
+  - generic [ref=f10e15]:
+    - generic [ref=f10e16]: Key
+    - generic [ref=f10e17]: Company
+    - generic [ref=f10e19]: Dept. lead — own colour
+    - generic [ref=f10e21]: Sub-agent — contrasts its lead
+  - generic [ref=f10e23]:
+    - generic [ref=f10e24]:
+      - generic [ref=f10e25]: ⚠
+      - generic [ref=f10e26]: Needs attention — 1 agent blocked
+      - button "Hide" [ref=f10e27] [cursor=pointer]
+    - list [ref=f10e28]:
+      - listitem [ref=f10e150]:
+        - text: eng-lead
+        - generic [ref=f10e151]: "vercel git connect failed with 400: need to add a GitHub Login Connection to the Vercel account before repo linking works; requires manual step in Vercel account settings, cannot be done via CLI/MCP"
+  - generic [ref=f10e31]:
+    - generic [ref=f10e32]:
+      - generic [ref=f10e33]: Activity log
+      - generic [ref=f10e34]: live
+    - list [ref=f10e37]:
+      - listitem [ref=f10e152]:
+        - generic [ref=f10e153]:
+          - generic [ref=f10e154]: ▸
+          - generic [ref=f10e155]: qa-lead
+          - generic [ref=f10e156]: started work
+          - generic [ref=f10e157]: 01:46:11
+        - generic [ref=f10e158]: synthetic test line for click-to-pin live timer
+      - listitem [ref=f10e38]:
+        - generic [ref=f10e39]:
+          - generic [ref=f10e40]: ✕
+          - generic [ref=f10e41]: eng-lead
+          - generic [ref=f10e42]: is blocked
+          - generic [ref=f10e43]: 01:29:10
+        - generic [ref=f10e44]: "vercel git connect blocked: Vercel account has no GitHub login connection"
+      - listitem [ref=f10e45]:
+        - generic [ref=f10e46]:
+          - generic [ref=f10e47]: ▸
+          - generic [ref=f10e48]: eng-lead
+          - generic [ref=f10e49]: started work
+          - generic [ref=f10e50]: 01:28:38
+        - generic [ref=f10e51]: connecting foundry-web to the GitHub repo for auto-deploy (vercel git connect)
+      - listitem [ref=f10e52]:
+        - generic [ref=f10e53]:
+          - generic [ref=f10e54]: ▸
+          - generic [ref=f10e55]: eng-lead
+          - generic [ref=f10e56]: started work
+          - generic [ref=f10e57]: 01:28:21
+        - generic [ref=f10e58]: committing website changes (about/home page edits, new features+pricing pages, MarketingLinks component); gitignoring .vercel and local skill caches
+      - listitem [ref=f10e59]:
+        - generic [ref=f10e60]:
+          - generic [ref=f10e61]: ▸
+          - generic [ref=f10e62]: eng-lead
+          - generic [ref=f10e63]: started work
+          - generic [ref=f10e64]: 01:27:49
+        - generic [ref=f10e65]: reviewing working tree / deciding what to commit
+      - listitem [ref=f10e66]:
+        - generic [ref=f10e67]:
+          - generic [ref=f10e68]: ✓
+          - generic [ref=f10e69]: design-lead
+          - generic [ref=f10e70]: finished
+          - generic [ref=f10e71]: 01:05:58
+        - generic [ref=f10e72]: built /features marketing page + shared MarketingLinks nav across home/about/pricing/features
+      - listitem [ref=f10e73]:
+        - generic [ref=f10e74]:
+          - generic [ref=f10e75]: ▸
+          - generic [ref=f10e76]: design-lead
+          - generic [ref=f10e77]: started work
+          - generic [ref=f10e78]: 01:02:17
+        - generic [ref=f10e79]: scope + build Foundry marketing site inside apps/web
+  - generic [ref=f10e83]:
+    - generic [ref=f10e84]:
+      - generic [ref=f10e85]: qa-lead
+      - button "✕" [ref=f10e86] [cursor=pointer]
+    - paragraph [ref=f10e87]: Test plans and test suites across company projects. Hands bugs back to eng-lead rather than fixing them itself.
+    - generic [ref=f10e159]: in flight — started 42s ago
+    - generic [ref=f10e88]: Task history (this session)
+    - list [ref=f10e89]:
+      - listitem [ref=f10e168]:
+        - generic [ref=f10e169]:
+          - generic [ref=f10e170]: ▸
+          - generic [ref=f10e171]: started work
+          - generic [ref=f10e172]: 01:46:11
+        - generic [ref=f10e173]: synthetic test line for click-to-pin live timer
+  - generic [ref=f10e80]: served by node server.js — nothing external
+  - generic:
+    - generic: qa-lead
+    - generic: Test plans and test suites across company projects. Hands bugs back to eng-lead rather than fixing them itself.
