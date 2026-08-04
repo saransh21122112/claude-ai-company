@@ -24,6 +24,9 @@ const KNOWN_AGENTS = new Set([
   "data-lead", "sales-lead", "legal-lead", "finance-lead", "support-lead",
   "qa-lead", "swe-lead", "code-reviewer", "frontend-developer",
   "backend-developer", "ui-ux-designer",
+  "spec-reviewer", "fact-checker", "status-compiler", "design-reviewer",
+  "metrics-auditor", "prospect-researcher", "contract-reviewer",
+  "expense-auditor", "faq-writer", "test-runner",
 ]);
 
 let raw = "";

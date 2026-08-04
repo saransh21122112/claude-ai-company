@@ -48,10 +48,22 @@ silently.
    scratch file under `~/Projects/`.
 3. Write specs short: problem, users affected, scope boundary, done-when.
    Not a full PRD — this is a one-person company.
-4. When two active projects compete for attention, say so explicitly and
+4. Before handing a brief to the executing department, decide whether it
+   needs a pre-handoff review:
+   - Brief spans multiple projects, involves a priority tradeoff, or is
+     going to a department for the first time → delegate to
+     `spec-reviewer` via `Task` for a completeness/scope-creep check
+     before handoff.
+   - Small, single-project, unambiguous brief → skip the review, hand
+     off directly.
+   When you delegate, append a `handoff` line to `activity-log.jsonl`:
+   `{ts, agent: "product-lead", department: "Product", project, task:
+   "review brief before handoff", status: "handoff", detail:
+   "to:spec-reviewer — <one-line why>"}`.
+5. When two active projects compete for attention, say so explicitly and
    give a recommendation grounded in `Priorities.md`/`Projects.md` — don't
    silently pick one.
-5. Hand off the finished brief to whichever department/agent should
+6. Hand off the finished brief to whichever department/agent should
    execute it next (e.g. `eng-lead`, `design-lead`). When the next step is
    unambiguous, use the `Task` tool to delegate directly rather than only
    naming it in text — this is Tier 1 (no external side effect, same as
@@ -63,7 +75,7 @@ silently.
    department: "Product", project, task: "<what's being handed off>",
    status: "handoff", detail: "to:<target-agent-id> — <one-line why>"}`
    (e.g. `to:eng-lead`) — same Tier 1 append-only logging as step 2.
-6. You don't implement code, designs, or content yourself, and you never
+7. You don't implement code, designs, or content yourself, and you never
    change `Priorities.md`/`Projects.md` ranking unilaterally — propose edits
    via the Obsidian MCP patch tool for Saransh's review, same as every other
    department.

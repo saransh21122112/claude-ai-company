@@ -368,6 +368,26 @@
       desc: "Server-side implementation — APIs, data layer/schema, services. Swe-lead specialist." },
     { id: "ui-ux-designer", label: "ui-ux-designer", group: "sub",
       desc: "Interface/UX design — flows, wireframes, information architecture. Drafts for frontend-developer." },
+    { id: "spec-reviewer", label: "spec-reviewer", group: "sub",
+      desc: "Read-only completeness/scope-creep check on a brief before handoff. Product sub-agent." },
+    { id: "fact-checker", label: "fact-checker", group: "sub",
+      desc: "Verifies citations and claims in a finished research draft. Research sub-agent." },
+    { id: "status-compiler", label: "status-compiler", group: "sub",
+      desc: "Compiles a cross-project status digest from the vault and activity log. Operations sub-agent." },
+    { id: "design-reviewer", label: "design-reviewer", group: "sub",
+      desc: "Read-only visual/UX consistency and accessibility pass over a built page. Design sub-agent." },
+    { id: "metrics-auditor", label: "metrics-auditor", group: "sub",
+      desc: "Read-only check that a dashboard or metric is correct, not just labeled fact. Data sub-agent." },
+    { id: "prospect-researcher", label: "prospect-researcher", group: "sub",
+      desc: "Researches and qualifies prospects feeding outreach drafts. Sales sub-agent." },
+    { id: "contract-reviewer", label: "contract-reviewer", group: "sub",
+      desc: "Read-only redline/risk-flagging pass on a contract. Legal sub-agent, never final sign-off." },
+    { id: "expense-auditor", label: "expense-auditor", group: "sub",
+      desc: "Read-only consistency/error check of expense records. Finance sub-agent." },
+    { id: "faq-writer", label: "faq-writer", group: "sub",
+      desc: "Builds and maintains FAQ knowledge-base content. Support sub-agent." },
+    { id: "test-runner", label: "test-runner", group: "sub",
+      desc: "Executes an already-written test suite and reports pass/fail. QA sub-agent." },
   ];
 
   const edges = [
@@ -380,6 +400,16 @@
     ["product-lead", "eng-lead"],
     ["ops-manager", "eng-lead"],
     ["ops-manager", "qa-lead"],
+    ["product-lead", "spec-reviewer"],
+    ["researcher", "fact-checker"],
+    ["ops-manager", "status-compiler"],
+    ["design-lead", "design-reviewer"],
+    ["data-lead", "metrics-auditor"],
+    ["sales-lead", "prospect-researcher"],
+    ["legal-lead", "contract-reviewer"],
+    ["finance-lead", "expense-auditor"],
+    ["support-lead", "faq-writer"],
+    ["qa-lead", "test-runner"],
   ].map(([a, b]) => ({ a, b }));
 
   document.getElementById("statNodes").textContent = nodes.length;
@@ -412,6 +442,36 @@
     n.hue = avoidHub((parentHue + 180) % 360);
   });
   function byId0(id) { return nodes.find(n => n.id === id); }
+
+  // ---- deterministic radial anchors ----
+  // Pure force-directed layout (repulsion + springs only) turned out not to
+  // have a well-behaved equilibrium for this shape: several leads carry 3-4
+  // attractive edges at once (hub + cross-department lateral links), and
+  // tuning constants to balance that against repulsion either left the graph
+  // slowly imploding over ~20s or crowded one arc of the circle while the
+  // opposite arc sat empty. A fixed angular slot per lead — evenly spaced,
+  // so no local-minimum clustering is possible — with subs fanned out near
+  // their own lead's slot, removes the guesswork: nodes still drift and can
+  // be dragged, but they're pulled toward a layout that's spread out by
+  // construction rather than by hoping the physics finds it.
+  const leadAngleOf = {};
+  leadIds.forEach((id, i) => { leadAngleOf[id] = -Math.PI / 2 + i * (2 * Math.PI / leadIds.length); });
+
+  const subsByParent = {};
+  nodes.filter(n => n.group === "sub").forEach(n => {
+    const p = parentOf[n.id];
+    (subsByParent[p] = subsByParent[p] || []).push(n.id);
+  });
+  const subAngleOf = {};
+  const SUB_FAN = 0.5; // radians of angular spread across a lead's own subs
+  Object.entries(subsByParent).forEach(([parentId, subIds]) => {
+    const base = leadAngleOf[parentId];
+    subIds.forEach((id, idx) => {
+      const t = subIds.length === 1 ? 0 : idx / (subIds.length - 1) - 0.5;
+      subAngleOf[id] = base + t * SUB_FAN;
+    });
+  });
+  const LEAD_R = 250, SUB_R = 355;
 
   // The single edge that connects a node "up" toward the hub — hub for a
   // lead, that lead for a sub-agent. This is what continuously lights up
@@ -447,12 +507,15 @@
     if (n.group === "hub") return null; // hub keeps its own reactor gradient
     const h = n.hue;
     if (n.group === "lead") {
-      return part === "fill" ? `hsl(${h} 68% 58% / 0.88)` : part === "ring" ? `hsl(${h} 85% 78%)` : `hsl(${h} 85% 74%)`;
+      return part === "fill" ? `hsl(${h} 72% 56% / 0.92)` : part === "ring" ? `hsl(${h} 88% 80%)` : `hsl(${h} 88% 76%)`;
     }
-    return part === "fill" ? `hsl(${h} 55% 55% / 0.5)` : part === "ring" ? `hsl(${h} 70% 68% / 0.85)` : `hsl(${h} 70% 72%)`;
+    // Subs used to render at 50% fill alpha, which reads as "faded lead
+    // colour" rather than its own hue against the dark background — bumped
+    // to near-lead opacity/saturation so the complementary hue actually pops.
+    return part === "fill" ? `hsl(${h} 70% 60% / 0.9)` : part === "ring" ? `hsl(${h} 85% 78%)` : `hsl(${h} 85% 78%)`;
   }
 
-  const radius = { hub: 23, lead: 12, sub: 8.5 };
+  const radius = { hub: 23, lead: 13, sub: 10 };
   const degree = {};
   edges.forEach(e => { degree[e.a] = (degree[e.a] || 0) + 1; degree[e.b] = (degree[e.b] || 0) + 1; });
 
@@ -490,11 +553,31 @@
   const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
 
   // ---- force simulation (simple, dependency-free) ----
-  const REPULSION = 2600;
-  const SPRING_LEN = 130;
-  const SPRING_K = 0.02;
-  const CENTER_K = 0.0018;
+  // Edges used to share one spring length/strength regardless of kind, which
+  // let the crowd's mutual repulsion drag every sub-agent away from its own
+  // (weakly-anchored) lead into one big undifferentiated cluster — the "hub
+  // -> lead" spring and "lead -> sub" spring need very different jobs: the
+  // first spaces departments out around the hub, the second should clamp a
+  // sub tight to its lead so each department reads as its own satellite
+  // cluster instead of all subs pooling together.
+  // Springs now only add the organic "elastic edge" feel on top of the
+  // anchors below — kept deliberately soft so they can't out-fight the
+  // anchor pull and drag the graph back into the old collapse.
+  const EDGE_KIND = { hubLead: { len: LEAD_R, k: 0.006 }, leadSub: { len: SUB_R - LEAD_R, k: 0.01 }, lateral: { len: 180, k: 0.003 } };
+  edges.forEach(e => {
+    const a = byId0(e.a), b = byId0(e.b);
+    e.kind = a.id === HUB ? "hubLead" : (a.group === "lead" && b.group === "sub") ? "leadSub" : "lateral";
+  });
+
+  // Repulsion is now just local jitter-avoidance (keeps a dragged node from
+  // sitting exactly on top of a neighbour) — the anchors define the actual
+  // layout, so ANCHOR_K needs to dominate REPULSION outright rather than
+  // merely compete with it, or the same slow drift comes back.
+  const REPULSION = 1400;
+  const CENTER_K = 0.0006; // only recentres the hub itself if dragged, not a structural force
+  const ANCHOR_K = 0.05;
   const DAMPING = 0.86;
+  const PAD = 60; // keep nodes (and their labels) inside the visible canvas
 
   let dragging = null;
   let hovered = null;
@@ -517,11 +600,13 @@
       const a = byId[e.a], b = byId[e.b];
       let dx = b.x - a.x, dy = b.y - a.y;
       let dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
-      const diff = (dist - SPRING_LEN) * SPRING_K;
+      const { len, k } = EDGE_KIND[e.kind];
+      const diff = (dist - len) * k;
       const fx = (dx / dist) * diff, fy = (dy / dist) * diff;
       if (a !== dragging) { a.vx += fx; a.vy += fy; }
       if (b !== dragging) { b.vx -= fx; b.vy -= fy; }
     });
+    const hub = byId[HUB];
     nodes.forEach(n => {
       n.entrance += (1 - n.entrance) * 0.08;
       if (n === dragging) return;
@@ -529,6 +614,28 @@
       n.vy += (H / 2 - n.y) * CENTER_K;
       n.vx *= DAMPING; n.vy *= DAMPING;
       n.x += n.vx; n.y += n.vy;
+
+      // Direct position-space pull toward the fixed radial slot, applied
+      // *after* the velocity integration rather than as another force added
+      // into it. A velocity-based anchor (n.vx += (target-n.x)*ANCHOR_K) was
+      // tried first and never actually converged in testing — a couple of
+      // nodes started this session's random initial ring close enough
+      // together that repulsion gave them a huge one-frame velocity kick,
+      // and that chaos kept getting redistributed through the shared
+      // velocity/damping system faster than the anchor could win it back.
+      // Lerping the position directly is immune to that: whatever velocity
+      // chaos happened this frame, the node still ends up a fixed fraction
+      // closer to its true slot, every frame, unconditionally.
+      if (n.group === "lead") {
+        n.x += (hub.x + Math.cos(leadAngleOf[n.id]) * LEAD_R - n.x) * ANCHOR_K;
+        n.y += (hub.y + Math.sin(leadAngleOf[n.id]) * LEAD_R - n.y) * ANCHOR_K;
+      } else if (n.group === "sub") {
+        n.x += (hub.x + Math.cos(subAngleOf[n.id]) * SUB_R - n.x) * ANCHOR_K;
+        n.y += (hub.y + Math.sin(subAngleOf[n.id]) * SUB_R - n.y) * ANCHOR_K;
+      }
+
+      n.x = Math.min(W - PAD, Math.max(PAD, n.x));
+      n.y = Math.min(H - PAD, Math.max(PAD, n.y));
       n.pulse *= 0.94;
     });
   }
@@ -709,16 +816,32 @@
         ctx.stroke();
       }
 
-      // label with a legibility backdrop, monospace, actual agent-id casing
+      // Label placed radially outward from the hub rather than always
+      // straight below the node — in a hub-and-spoke layout, "always below"
+      // makes any two nodes that are merely close in x (common near the top
+      // of the ring, regardless of how well-separated the physics keeps
+      // them) collide, since their labels land at the same height. Radiating
+      // outward means only nodes that are close in *angle* collide, which is
+      // exactly the case the anchor spacing above already prevents.
       ctx.font = n.group === "hub" ? "600 12px " + getMonoFont() : "11px " + getMonoFont();
       const label = n.label.toLowerCase() === "ai company" ? "AI COMPANY" : n.label;
       const tw = ctx.measureText(label).width;
-      const ly = n.y + r + 16;
+      let lx = n.x, ly = n.y + r + 16, align = "center";
+      if (n.group !== "hub") {
+        const hubN = byId[HUB];
+        const ddx = n.x - hubN.x, ddy = n.y - hubN.y;
+        const dd = Math.hypot(ddx, ddy) || 1;
+        const ux = ddx / dd, uy = ddy / dd;
+        lx = n.x + ux * (r + 14);
+        ly = n.y + uy * (r + 14) + 4;
+        align = ux > 0.35 ? "left" : ux < -0.35 ? "right" : "center";
+      }
+      const bx = align === "left" ? lx - 4 : align === "right" ? lx - tw - 4 : lx - tw / 2 - 4;
       ctx.fillStyle = "rgba(10,12,16,0.72)";
-      ctx.fillRect(n.x - tw / 2 - 4, ly - 10, tw + 8, 14);
+      ctx.fillRect(bx, ly - 10, tw + 8, 14);
       ctx.fillStyle = dim ? "rgba(231,235,240,0.35)" : "rgba(231,235,240,0.92)";
-      ctx.textAlign = "center";
-      ctx.fillText(label, n.x, ly);
+      ctx.textAlign = align;
+      ctx.fillText(label, lx, ly);
 
       ctx.restore();
     });

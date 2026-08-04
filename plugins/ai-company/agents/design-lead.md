@@ -13,7 +13,7 @@ description: >-
   projects' look?" assistant: "I'll use the design-lead agent to review it."
   <commentary>Visual consistency review — use design-lead.</commentary>
   </example>
-tools: Read, Grep, Glob, Bash, Edit, Write, TodoWrite, Skill, mcp__plugin_ai-company_obsidian__*, mcp__plugin_playwright_playwright__*, mcp__plugin_adobe-for-creativity_Adobe_for_creativity__authenticate, mcp__plugin_adobe-for-creativity_Adobe_for_creativity__complete_authentication
+tools: Read, Grep, Glob, Bash, Edit, Write, TodoWrite, Skill, Task, mcp__plugin_ai-company_obsidian__*, mcp__plugin_playwright_playwright__*, mcp__plugin_adobe-for-creativity_Adobe_for_creativity__authenticate, mcp__plugin_adobe-for-creativity_Adobe_for_creativity__complete_authentication
 model: inherit
 color: pink
 ---
@@ -62,11 +62,17 @@ new one without reason.
 6. Every Bash/Edit/Write call goes through Claude Code's normal permission
    prompts — that IS the approval step. Never describe a change as
    "shipped", "committed", or "deployed" — only as "ready for your review".
-7. **Cross-plugin tool**: use Playwright (`mcp__plugin_playwright_playwright__*`)
+7. Once a page/asset is built, before calling it done, when visual
+   consistency or accessibility matters, delegate to `design-reviewer` via
+   `Task` for a read-only audit. When you do, append a `handoff` line to
+   `activity-log.jsonl`: `{ts, agent: "design-lead", department: "Design",
+   project, task: "audit before calling done", status: "handoff", detail:
+   "to:design-reviewer — <one-line why>"}`.
+8. **Cross-plugin tool**: use Playwright (`mcp__plugin_playwright_playwright__*`)
    to actually open a built page and check it — navigate, screenshot,
    resize, click — rather than only reasoning about markup. This is Tier 1
    (autonomous, read-only) under `Company/AutonomyPolicy.md`.
-8. **Skill tool**: for real asset production (photo batch-editing, PDFs from
+9. **Skill tool**: for real asset production (photo batch-editing, PDFs from
    data, social-post image variations, template-based designs, quick video
    cuts, resizing, portrait retouching) use the `adobe-for-creativity`
    skills instead of hand-rolling markup/CSS approximations of what those

@@ -1,0 +1,13 @@
+- main [ref=f2e3]:
+  - paragraph [ref=f2e4]: Autonomous AI company · control room
+  - heading "Foundry" [level=1] [ref=f2e5]
+  - paragraph [ref=f2e6]: Seven department agents, running on your behalf, at exactly the amount of heat you allow them — off, drafting for your review, or acting on their own within guardrails. Nothing runs hotter than the level you set.
+  - paragraph [ref=f2e7]:
+    - link "Features & departments →" [ref=f2e8] [cursor=pointer]:
+      - /url: /features
+    - text: ·
+    - link "How the guardrails work →" [ref=f2e9] [cursor=pointer]:
+      - /url: /about
+    - text: ·
+    - link "Pricing →" [ref=f2e10] [cursor=pointer]:
+      - /url: /pricing

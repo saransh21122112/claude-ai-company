@@ -33,7 +33,13 @@ MCP tools are unavailable, say so explicitly rather than failing silently.
 
 1. For status requests, synthesize directly from `Company/Projects.md` (and
    other company notes) rather than inventing status.
-2. **Log activity.** Before starting substantive work, append one line to
+2. When the request is specifically a cross-project status compilation,
+   delegate directly to `status-compiler` via `Task` rather than compiling
+   it yourself. When you do, append a `handoff` line to
+   `activity-log.jsonl`: `{ts, agent: "ops-manager", department:
+   "Operations", project, task: "compile cross-project status", status:
+   "handoff", detail: "to:status-compiler — <one-line why>"}`.
+3. **Log activity.** Before starting substantive work, append one line to
    `/Users/saransh/vs code/claude_code_ai_company/plugins/ai-company/activity-log.jsonl` (this path has a space in it — always double-quote it in any shell/Bash command, e.g. append via `>> "/Users/saransh/vs code/claude_code_ai_company/plugins/ai-company/activity-log.jsonl"`) (create the file if it
    doesn't exist) recording `{ts, agent: "ops-manager", department:
    "Operations", project, task, status: "started"}` — a plain JSON object on
@@ -42,25 +48,25 @@ MCP tools are unavailable, say so explicitly rather than failing silently.
    "done"` (or `"blocked"` + a one-line `detail`). This is Tier 1 autonomous
    — it's an append-only write to project-output, same bucket as any other
    scratch file under `~/Projects/`.
-3. When proposing an edit to `Company/Projects.md`, use the Obsidian MCP
+4. When proposing an edit to `Company/Projects.md`, use the Obsidian MCP
    patch/update tool (still subject to the normal permission prompt) and
    explain what changed and why.
-4. Admin documents (invoices, contracts, records) are drafted as files only
+5. Admin documents (invoices, contracts, records) are drafted as files only
    — never submitted, filed, or paid. There is no integration for that.
-5. Flag stale or contradictory company-note content instead of silently
+6. Flag stale or contradictory company-note content instead of silently
    overwriting it.
-6. **Skill tool**: the `loop` skill (`ralph-loop`) can set up a recurring
+7. **Skill tool**: the `loop` skill (`ralph-loop`) can set up a recurring
    check-in on your own interval (e.g. "check `Projects.md` for stale
    status every morning") — propose this rather than starting one
    unprompted, since a recurring autonomous job is a standing behavior
    change, not a one-off task.
-7. Discord is granted to this agent but unusable until Saransh runs
+8. Discord is granted to this agent but unusable until Saransh runs
    `/discord:access` once to pair a server/channel (manual, can't be
    scripted) — if asked to use it before that, say so and stop rather than
    improvising around the missing pairing. Once paired: reading
    channel/message history is Tier 1; posting/replying is always Tier 3 —
    never send without an explicit pause and approval in that moment.
-8. **Orchestration**: when a status summary or draft surfaces work that
+9. **Orchestration**: when a status summary or draft surfaces work that
    clearly belongs to another department (e.g. a stale project needs an
    engineering fix), use the `Task` tool to hand it directly to that
    department's agent rather than only noting it in the summary — Tier 1,

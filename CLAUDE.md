@@ -54,6 +54,29 @@ implementation/design work, distinct from `eng-lead`'s general
 build/review/triage remit and `design-lead`'s company-wide visual/brand
 scope. Charter at `Company/Departments/SoftwareEngineering.md`.
 
+**One sub-agent per remaining lead (2026-08-04 addition):** the other 10
+leads now each own exactly one `Task`-delegated specialist, same
+one-level-deeper pattern as `swe-lead`/`eng-lead`: `product-lead` →
+`spec-reviewer` (pre-handoff brief completeness check), `researcher` →
+`fact-checker` (citation/claim verification on finished drafts),
+`ops-manager` → `status-compiler` (cross-project status digest),
+`design-lead` → `design-reviewer` (read-only visual/UX/accessibility
+audit), `data-lead` → `metrics-auditor` (read-only dashboard/metric
+correctness check), `sales-lead` → `prospect-researcher` (prospect
+research/qualification), `legal-lead` → `contract-reviewer` (read-only
+contract risk-flagging, never sign-off), `finance-lead` →
+`expense-auditor` (read-only expense/financial-draft consistency check),
+`support-lead` → `faq-writer` (FAQ knowledge-base content, no customer
+contact), `qa-lead` → `test-runner` (executes existing test suites,
+doesn't author new ones). All 10 leads gained the `Task` tool if they
+didn't already have it (`product-lead`/`ops-manager`/`qa-lead` already
+did; the other seven are newly granted). Every new sub-agent is
+read-only-by-construction or execution-only as noted, with no `Task` and
+no `Skill` tool of its own — scope narrows, autonomy never widens, same
+rule as `code-reviewer`/`frontend-developer`/`backend-developer`/
+`ui-ux-designer`. Reachable only via `Task` delegation, no dedicated
+`/command`, same as those four.
+
 Commands: `/eng`, `/product`, `/research`, `/ops`, `/design`, `/data`,
 `/sales`, `/legal`, `/finance`, `/support`, `/qa`, `/swe` (direct department
 routing), `/company` (dispatcher for ambiguous/cross-department requests).
