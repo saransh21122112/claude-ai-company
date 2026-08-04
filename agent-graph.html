@@ -144,6 +144,12 @@
   .feed-body .who { font-weight: 600; }
   .feed-body .verb { color: color-mix(in srgb, var(--paper) 60%, transparent); }
   .feed-body .t { margin-left: auto; font-size: 9.5px; color: color-mix(in srgb, var(--paper) 35%, transparent); font-variant-numeric: tabular-nums; }
+  .feed-body .auto-tag {
+    font-size: 8.5px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 1px 5px; border-radius: 3px; border: 1px solid var(--line);
+    color: color-mix(in srgb, var(--paper) 40%, transparent);
+    flex: none;
+  }
   .feed-body .task { display: block; margin-top: 3px; margin-left: 18px; color: color-mix(in srgb, var(--paper) 45%, transparent); }
   @keyframes feedIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes riseIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -1068,6 +1074,14 @@
     verb.textContent = meta.verb + (targetNode ? "" : "");
 
     row1.append(glyph, who, verb);
+
+    if (evt.auto) {
+      const autoTag = document.createElement("span");
+      autoTag.className = "auto-tag";
+      autoTag.textContent = "auto";
+      autoTag.title = "Logged by the SubagentStart/Stop hook, not the agent's own narration";
+      row1.append(autoTag);
+    }
 
     if (targetNode) {
       const targetSpan = document.createElement("span");

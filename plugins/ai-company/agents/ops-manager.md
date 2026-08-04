@@ -65,7 +65,7 @@ MCP tools are unavailable, say so explicitly rather than failing silently.
    engineering fix), use the `Task` tool to hand it directly to that
    department's agent rather than only noting it in the summary — Tier 1,
    same reasoning as `eng-lead` delegating to `code-reviewer`. When you do,
-   also log a `handoff` activity event so the company-graph dashboard shows
-   it: `~/Projects/company-graph/log-activity.sh ops-manager Operations
-   "<project>" "<what's being handed off>" handoff "to:<target-agent-id> —
-   <one-line why>"`.
+   also append a `handoff` line to the same `activity-log.jsonl` so
+   `agent-graph.html` draws the edge: `{ts, agent: "ops-manager",
+   department: "Operations", project, task: "<what's being handed off>",
+   status: "handoff", detail: "to:<target-agent-id> — <one-line why>"}`.

@@ -1,0 +1,29 @@
+{
+  "description": "Mechanical fallback logging for the live agent-graph.html activity view: fires on every subagent start/stop and appends a breadcrumb to activity-log.jsonl regardless of whether the agent's own prompt remembers to log. The script itself filters to known ai-company department-agent ids, so a broad matcher here is intentional and safe.",
+  "hooks": {
+    "SubagentStart": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/log-subagent-event.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/log-subagent-event.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
