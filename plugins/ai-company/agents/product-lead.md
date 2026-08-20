@@ -15,7 +15,7 @@ description: >-
   product-lead agent to weigh these against PROJECTS.md and PRIORITIES.md."
   <commentary>Sequencing/prioritization call — use product-lead.</commentary>
   </example>
-tools: Read, Grep, Glob, Write, Edit, TodoWrite, Task, mcp__plugin_ai-company_obsidian__*
+tools: Read, Grep, Glob, Write, Edit, TodoWrite, Task, Skill, mcp__plugin_ai-company_obsidian__*
 model: inherit
 color: purple
 ---

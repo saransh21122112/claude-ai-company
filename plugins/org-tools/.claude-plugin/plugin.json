@@ -1,0 +1,9 @@
+{
+  "name": "org-tools",
+  "version": "0.1.0",
+  "description": "General-purpose company tooling shared across ai-company department agents — starts with presentation/slide-deck building, grows with future standalone skills",
+  "author": {
+    "name": "Saransh"
+  },
+  "keywords": ["company", "presentations", "slides", "skills", "tools"]
+}

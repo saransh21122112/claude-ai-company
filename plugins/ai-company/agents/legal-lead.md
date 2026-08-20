@@ -13,7 +13,7 @@ description: >-
   contract and flag anything concerning" assistant: "I'll use the
   legal-lead agent to review it." <commentary>Contract review — use
   legal-lead, not eng-lead or ops-manager.</commentary></example>
-tools: Read, Write, Edit, TodoWrite, Glob, Grep, Task, mcp__plugin_ai-company_obsidian__*
+tools: Read, Write, Edit, TodoWrite, Glob, Grep, Task, Skill, mcp__plugin_ai-company_obsidian__*
 model: inherit
 color: gray
 ---

@@ -81,20 +81,23 @@ Commands: `/eng`, `/product`, `/research`, `/ops`, `/design`, `/data`,
 `/sales`, `/legal`, `/finance`, `/support`, `/qa`, `/swe` (direct department
 routing), `/company` (dispatcher for ambiguous/cross-department requests).
 
-**`/git-commit` (2026-08-21 addition):** standalone command, not
-department-routed — stages changes, computes a LOC-changed summary from
-`git diff --stat`, infers a Conventional-Commit-style message
-(feat/fix/chore) from the diff, commits under whatever `git config
-user.name`/`user.email` is already set (never overridden), and pushes. No
-`Co-Authored-By: Claude` trailer on these commits — attribution is the
-existing git identity only. `git add`/`commit`/`push` still go through
-Claude Code's normal permission prompts (Tier 3, per `AutonomyPolicy.md` —
-"any git commit, push, merge, or force-anything" always pauses for
-approval); the command narrating a draft message is not itself the
-approval. On success it appends a line (with a new `loc: {files, added,
-removed}` field) to that repo's `activity-log.jsonl` if one already exists
-at the repo root — skips silently otherwise, doesn't create the file in
-repos that don't already use this convention.
+**`/git-commit` (2026-08-21 addition, moved into `org-tools` 2026-08-21):**
+lives at `plugins/org-tools/commands/git-commit.md`, not in this plugin —
+standalone command, not department-routed. Stages changes, computes a
+LOC-changed summary from `git diff --stat`, infers a Conventional-Commit-
+style message (feat/fix/chore) from the diff, commits under whatever `git
+config user.name`/`user.email` is already set (never overridden), and
+pushes. No `Co-Authored-By: Claude` trailer on these commits — attribution
+is the existing git identity only. `git add`/`commit`/`push` still go
+through Claude Code's normal permission prompts (Tier 3, per
+`AutonomyPolicy.md` — "any git commit, push, merge, or force-anything"
+always pauses for approval, though the project's own `.claude/settings.json`
+now allowlists the specific git subcommands it needs); the command
+narrating a draft message is not itself the approval. On success it
+appends a line (with a new `loc: {files, added, removed}` field) to that
+repo's `activity-log.jsonl` if one already exists at the repo root — skips
+silently otherwise, doesn't create the file in repos that don't already
+use this convention.
 
 ## Cross-plugin tools already wired in
 
@@ -147,6 +150,32 @@ repos that don't already use this convention.
   Saransh explicitly asking again, and treat that as a real signal, not
   just caution. (`ralph-loop` is a different plugin and installed fine —
   don't confuse the two.)
+
+## `org-tools` plugin (2026-08-21 addition)
+
+Second plugin in this marketplace, separate from `ai-company` —
+`plugins/org-tools/`, registered in `.claude-plugin/marketplace.json` and
+enabled in `~/.claude/settings.json` (`org-tools@ai-company-local`). Holds
+general-purpose tooling meant to be reusable across every department agent,
+starting with `skills/presentation-builder/` — builds an org-branded slide
+deck as a multi-`<section>` HTML file published via `Artifact` (not a native
+`.pptx`), leaning on the existing `artifact-design`/`artifact-diagramming`/
+`dataviz` skills rather than inventing its own layout rules. Also holds
+`commands/git-commit.md` (moved here from `ai-company` on 2026-08-21 —
+general-purpose git tooling belongs with the other cross-cutting skills,
+not the department-agent plugin). Future standalone skills Saransh adds go
+here, not into `plugins/ai-company/`.
+
+Because there's still no per-skill grant mechanism, "giving an agent access"
+to a new skill in this plugin means granting that agent the generic `Skill`
+tool (which exposes every installed skill, not a curated subset — same
+known limitation noted below for the other `Skill`-tool grants). All 11
+department leads plus `swe-lead` now hold `Skill`: this addition explicitly
+extended it to `product-lead` and `legal-lead`, the two that didn't already
+have it. `legal-lead`'s addition reverses a prior deliberate restriction
+(documented as "same reasoning as `code-reviewer` — stays narrower by
+design") — done here on Saransh's explicit confirmation, not as a quiet
+loosening.
 
 ## Standing side-projects (all under `~/Projects/`, never inside the plugin repo)
 

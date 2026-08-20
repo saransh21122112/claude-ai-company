@@ -8,6 +8,11 @@
       "name": "ai-company",
       "source": "./plugins/ai-company",
       "description": "In-house AI company department agents"
+    },
+    {
+      "name": "org-tools",
+      "source": "./plugins/org-tools",
+      "description": "General-purpose company tooling shared across ai-company department agents (presentations, and future standalone skills)"
     }
   ]
 }
