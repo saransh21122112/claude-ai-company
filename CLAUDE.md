@@ -81,6 +81,21 @@ Commands: `/eng`, `/product`, `/research`, `/ops`, `/design`, `/data`,
 `/sales`, `/legal`, `/finance`, `/support`, `/qa`, `/swe` (direct department
 routing), `/company` (dispatcher for ambiguous/cross-department requests).
 
+**`/git-commit` (2026-08-21 addition):** standalone command, not
+department-routed — stages changes, computes a LOC-changed summary from
+`git diff --stat`, infers a Conventional-Commit-style message
+(feat/fix/chore) from the diff, commits under whatever `git config
+user.name`/`user.email` is already set (never overridden), and pushes. No
+`Co-Authored-By: Claude` trailer on these commits — attribution is the
+existing git identity only. `git add`/`commit`/`push` still go through
+Claude Code's normal permission prompts (Tier 3, per `AutonomyPolicy.md` —
+"any git commit, push, merge, or force-anything" always pauses for
+approval); the command narrating a draft message is not itself the
+approval. On success it appends a line (with a new `loc: {files, added,
+removed}` field) to that repo's `activity-log.jsonl` if one already exists
+at the repo root — skips silently otherwise, doesn't create the file in
+repos that don't already use this convention.
+
 ## Cross-plugin tools already wired in
 
 - `eng-lead`: Vercel MCP (read-only), Playwright, `Task` (→ `code-reviewer`,
