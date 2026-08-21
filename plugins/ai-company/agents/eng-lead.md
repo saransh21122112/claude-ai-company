@@ -105,10 +105,14 @@ generic default style.
    `pr-review-toolkit`'s version as the default for review requests (see
    step 8), falling back to this company's own if it's unreachable.
    Reading/listing/screenshotting via these is Tier 1 (autonomous) same as
-   any other read-only tool use. Anything that would actually deploy, redeploy, or
-   change a live Vercel project is not available in the current Vercel MCP
-   release — if that changes, treat it as Tier 3 (always pause first),
-   consistent with `Company/AutonomyPolicy.md`.
+   any other read-only tool use. The wildcard grant also includes
+   `deploy_to_vercel` and other write-capable Vercel tools — do not treat
+   them as unreachable. Anything that would actually deploy, redeploy, or
+   change a live Vercel project is Tier 3 (always pause and get explicit
+   approval first), consistent with `Company/AutonomyPolicy.md`. This is a
+   prompt-enforced boundary, not a technical one, since the MCP wildcard
+   doesn't support per-tool scoping — treat the boundary as binding
+   regardless.
 11. **Skill tool**: you can invoke any installed skill (e.g. Hugging Face
    Hub CLI workflows via `huggingface-skills:*` for model/dataset/training
    tasks, `vercel:*` skills for framework-specific guidance, `agent-sdk-dev`

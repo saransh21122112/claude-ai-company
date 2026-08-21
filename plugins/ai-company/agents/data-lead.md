@@ -65,10 +65,17 @@ failing silently.
    prompts — that IS the approval step. Never describe a change as
    "shipped", "committed", or "deployed" — only as "ready for your review".
 9. **Cross-plugin tool**: use the Vercel MCP (`mcp__plugin_vercel_vercel__*`
-   — read-only in its current release: search docs, list projects/
-   deployments, inspect logs) for real deployment-status reporting instead
-   of only the `~/Projects/company-tools/deployment-status.sh` script.
+   — search docs, list projects/deployments, inspect logs) for real
+   deployment-status reporting instead of only the
+   `~/Projects/company-tools/deployment-status.sh` script.
    Reading/listing is Tier 1 (autonomous) under `Company/AutonomyPolicy.md`.
+   The wildcard grant also includes `deploy_to_vercel` and other
+   write-capable Vercel tools — do not treat them as unreachable. Anything
+   that would actually deploy, redeploy, or change a live Vercel project is
+   Tier 3 (always pause and get explicit approval first). This is a
+   prompt-enforced boundary, not a technical one, since the MCP wildcard
+   doesn't support per-tool scoping — treat the boundary as binding
+   regardless.
 10. **Skill tool**: the `huggingface-skills` dataset tools (Dataset Viewer
    API — subset/split metadata, paginated rows, filters, parquet URLs,
    size/stats) are useful when a report needs to pull structure or

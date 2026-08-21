@@ -137,14 +137,17 @@ use this convention.
 - `ponytail` is a hooks-based coding-style enforcer (YAGNI/minimal-diff),
   not something wired per-agent — it applies session-wide via hooks, same
   as any other installed hook plugin.
-- Known and *not yet re-addressed*: `eng-lead` and `data-lead` hold
-  `mcp__plugin_vercel_vercel__*` as a wildcard, which as of this plugin
-  version includes a real `deploy_to_vercel` tool — despite both agents'
-  own prompts still saying deploy isn't reachable via the MCP. Saransh was
-  asked and chose to leave this as-is for now; it is a live gap between
-  the documented Tier-3 deploy policy and actual tool access, worth
-  revisiting deliberately rather than assuming the prompt text is a real
-  guardrail.
+- **Fixed (2026-08-21):** `eng-lead` and `data-lead` hold
+  `mcp__plugin_vercel_vercel__*` as a wildcard, which includes a real
+  `deploy_to_vercel` tool. Both agents' prompts previously (falsely)
+  claimed deploy wasn't reachable via the MCP at all. Both now correctly
+  state the tool is reachable and mark deploy/redeploy/change actions
+  Tier 3 (pause-and-ask), same as any other Tier 3 action — a real
+  prompt-enforced boundary in place of the earlier false claim of
+  unavailability. Still not a hard technical guardrail (the MCP wildcard
+  has no per-tool scoping mechanism), same known-gap shape as Discord's
+  send/post boundary above — but the prompt text is now honest about what
+  it's actually gating.
 - `hookify` and `ralph-wiggum` plugin installs were **blocked by Claude
   Code's own auto-mode classifier** when attempted — don't retry without
   Saransh explicitly asking again, and treat that as a real signal, not
