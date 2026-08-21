@@ -1,5 +1,6 @@
 {
   "name": "ai-company-local",
+  "description": "In-house AI company plugins: department agents that draft and deliver work grounded in Obsidian vault company context, plus general-purpose org tooling (presentations, git-commit, changelog/vault/status/Discord/onboarding skills).",
   "owner": {
     "name": "Saransh Gupta",
     "email": "saranshgupta2112@gmail.com"
