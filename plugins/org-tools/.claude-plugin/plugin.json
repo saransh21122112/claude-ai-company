@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "General-purpose company tooling shared across ai-company department agents — starts with presentation/slide-deck building, grows with future standalone skills",
   "author": {
-    "name": "Saransh"
+    "name": "Saransh Gupta",
+    "email": "saranshgupta2112@gmail.com"
   },
   "keywords": ["company", "presentations", "slides", "skills", "tools"]
 }

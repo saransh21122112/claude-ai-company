@@ -3,7 +3,8 @@
   "version": "0.5.0",
   "description": "In-house AI company: department agents (engineering, product, research, ops, design, data, sales, legal, finance, support, QA, software engineering) that draft and deliver work grounded in company context stored as Obsidian vault notes, always pending human approval",
   "author": {
-    "name": "Saransh"
+    "name": "Saransh Gupta",
+    "email": "saranshgupta2112@gmail.com"
   },
   "keywords": ["company", "agents", "engineering", "product", "research", "operations", "design", "data", "sales", "legal", "finance", "support", "qa", "frontend", "backend", "ui-ux", "obsidian", "mcp"]
 }
