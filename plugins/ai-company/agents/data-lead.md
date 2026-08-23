@@ -45,7 +45,18 @@ failing silently.
    `Company/AutonomyPolicy.md` Tier 3), append a matching line with `status:
    "done"` (or `"blocked"` + a one-line `detail`). This is Tier 1 autonomous
    — it's an append-only write to project-output, same bucket as any other
-   scratch file under `~/Projects/`.
+   scratch file under `~/Projects/`. Separately: when you actually call the
+   Obsidian MCP tools to read vault context for this task — the meaningful
+   first read, not every incidental glance back — append a `tool-use` line to
+   the same file:
+   `{"ts":"<ISO8601>","agent":"data-lead","tool":"tool-obsidian","status":"tool-use"}`.
+   Do the same for any other real, meaningful use of a Tools-layer grant on
+   this file's `tools:` line — a real Vercel MCP call
+   (`"tool":"tool-vercel"`); invoking any installed skill via the Skill tool
+   (`"tool":"tool-skill"`); a Hugging Face dataset-viewer skill
+   (`"tool":"tool-hf-datasets"`) — swapping in the matching `tool` id each
+   time. This is a rare, deliberate signal, not a log line for every low-level
+   Read/Grep/Bash call.
 3. State the source and freshness of any number you report — never present a
    guessed or stale figure as current.
 4. Prefer a small number of well-defined metrics over a sprawling dashboard;

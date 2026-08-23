@@ -49,4 +49,10 @@ proceed on the request alone.
    the user's explicit action. Because it has a Write tool, it logs its own
    `started`/`done` lines to `activity-log.jsonl`; when the task originated
    as a delegation from `support-lead`, that entry also carries the
-   handoff context.
+   handoff context. Separately: when you actually call the Obsidian MCP
+   tools to read vault context for this task — the meaningful first read,
+   not every incidental glance back — append a `tool-use` line to the same
+   file:
+   `{"ts":"<ISO8601>","agent":"faq-writer","tool":"tool-obsidian","status":"tool-use"}`.
+   This is a rare, deliberate signal, not a log line for every low-level
+   Read/Grep call.

@@ -45,7 +45,19 @@ new one without reason.
    `Company/AutonomyPolicy.md` Tier 3), append a matching line with `status:
    "done"` (or `"blocked"` + a one-line `detail`). This is Tier 1 autonomous
    — it's an append-only write to project-output, same bucket as any other
-   scratch file under `~/Projects/`.
+   scratch file under `~/Projects/`. Separately: when you actually call the
+   Obsidian MCP tools to read vault context for this task — the meaningful
+   first read, not every incidental glance back — append a `tool-use` line to
+   the same file:
+   `{"ts":"<ISO8601>","agent":"design-lead","tool":"tool-obsidian","status":"tool-use"}`.
+   Do the same for any other real, meaningful use of a Tools-layer grant on
+   this file's `tools:` line — a real Playwright call to load/click/screenshot
+   a page (`"tool":"tool-playwright"`); the Adobe for Creativity
+   authentication MCP tool (`"tool":"tool-adobe"`); invoking any installed
+   skill via the Skill tool (`"tool":"tool-skill"`); the `frontend-design`
+   skill (`"tool":"tool-frontend-design"`) — swapping in the matching `tool`
+   id each time. This is a rare, deliberate signal, not a log line for every
+   low-level Read/Grep/Bash call.
 3. **Decide where the work lives before writing anything** — same rule as
    engineering: work inside an existing tracked project's own repo/folder if
    there is one; for a genuinely new standalone build, create a dedicated

@@ -57,7 +57,17 @@ rather than failing silently.
    "swe-lead", department: "Software Engineering", project, task, status:
    "started"}`, and a matching `"done"`/`"blocked"` line when you finish.
    Log a `handoff` line (per `Company/AutonomyPolicy.md`) when delegating to
-   a specialist via `Task`.
+   a specialist via `Task`. Separately: when you actually call the Obsidian MCP
+   tools to read vault context for this task — the meaningful first read, not
+   every incidental glance back — append a `tool-use` line to the same file:
+   `{"ts":"<ISO8601>","agent":"swe-lead","tool":"tool-obsidian","status":"tool-use"}`.
+   Do the same for any other real, meaningful use of a Tools-layer grant on
+   this file's `tools:` line — a real Playwright call to load/click/screenshot
+   a page (`"tool":"tool-playwright"`); invoking any installed skill via the
+   Skill tool (`"tool":"tool-skill"`); the `frontend-design` skill specifically
+   (`"tool":"tool-frontend-design"`) — swapping in the matching `tool` id each
+   time. This is a rare, deliberate signal, not a log line for every low-level
+   Read/Grep/Bash call.
 6. Every Bash/Edit/Write call goes through Claude Code's normal permission
    prompts. Never describe a change as "shipped", "committed", or
    "deployed" — only "ready for your review".

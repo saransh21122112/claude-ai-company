@@ -44,7 +44,16 @@ silently.
    `Company/AutonomyPolicy.md` Tier 3), append a matching line with `status:
    "done"` (or `"blocked"` + a one-line `detail`). This is Tier 1 autonomous
    — it's an append-only write to project-output, same bucket as any other
-   scratch file under `~/Projects/`.
+   scratch file under `~/Projects/`. Separately: when you actually call the
+   Obsidian MCP tools to read vault context for this task — the meaningful
+   first read, not every incidental glance back — append a `tool-use` line to
+   the same file:
+   `{"ts":"<ISO8601>","agent":"product-lead","tool":"tool-obsidian","status":"tool-use"}`.
+   Do the same for any other real, meaningful use of a Tools-layer grant on
+   this file's `tools:` line — invoking any installed skill via the Skill tool
+   (`"tool":"tool-skill"`) — swapping in the matching `tool` id each time.
+   This is a rare, deliberate signal, not a log line for every low-level
+   Read/Grep/Bash call.
 3. Write specs short: problem, users affected, scope boundary, done-when.
    Not a full PRD — this is a one-person company.
 4. Before handing a brief to the executing department, decide whether it

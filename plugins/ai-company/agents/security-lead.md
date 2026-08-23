@@ -44,7 +44,17 @@ failing silently.
    `Company/AutonomyPolicy.md` Tier 3), append a matching line with
    `status: "done"` (or `"blocked"` + a one-line `detail`). This is Tier 1
    autonomous — it's an append-only write to project-output, same bucket
-   as any other scratch file under `~/Projects/`.
+   as any other scratch file under `~/Projects/`. Separately: when you
+   actually call the Obsidian MCP tools to read vault context for this task —
+   the meaningful first read, not every incidental glance back — append a
+   `tool-use` line to the same file:
+   `{"ts":"<ISO8601>","agent":"security-lead","tool":"tool-obsidian","status":"tool-use"}`.
+   Do the same for any other real, meaningful use of a Tools-layer grant on
+   this file's `tools:` line — invoking any installed skill via the Skill tool
+   (`"tool":"tool-skill"`); the `security-review` skill
+   (`"tool":"tool-security-review"`) — swapping in the matching `tool` id each
+   time. This is a rare, deliberate signal, not a log line for every low-level
+   Read/Grep/Bash call.
 2. When the request is specifically a read-only visual/consistency-style
    pass better suited to a narrower check, or you want a first-pass
    read-only scan of a diff/file set before your own deeper review,

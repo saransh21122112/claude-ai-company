@@ -43,7 +43,17 @@ test framework into a project that already has one.
    `Company/AutonomyPolicy.md` Tier 3), append a matching line with
    `status: "done"` (or `"blocked"` + a one-line `detail`). This is Tier 1
    autonomous — it's an append-only write to project-output, same bucket
-   as any other scratch file under `~/Projects/`.
+   as any other scratch file under `~/Projects/`. Separately: when you
+   actually call the Obsidian MCP tools to read vault context for this task —
+   the meaningful first read, not every incidental glance back — append a
+   `tool-use` line to the same file:
+   `{"ts":"<ISO8601>","agent":"qa-lead","tool":"tool-obsidian","status":"tool-use"}`.
+   Do the same for any other real, meaningful use of a Tools-layer grant on
+   this file's `tools:` line — a real Playwright call to load/click/screenshot
+   a page (`"tool":"tool-playwright"`); invoking any installed skill via the
+   Skill tool (`"tool":"tool-skill"`) — swapping in the matching `tool` id
+   each time. This is a rare, deliberate signal, not a log line for every
+   low-level Read/Grep/Bash call.
 2. When the request is specifically executing an already-written test
    suite, not authoring new tests, delegate directly to `test-runner` via
    `Task`. When you do, append a `handoff` line to `activity-log.jsonl`:

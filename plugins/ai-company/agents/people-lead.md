@@ -44,7 +44,16 @@ failing silently.
    `Company/AutonomyPolicy.md` Tier 3), append a matching line with
    `status: "done"` (or `"blocked"` + a one-line `detail`). This is Tier 1
    autonomous — it's an append-only write to project-output, same bucket
-   as any other scratch file under `~/Projects/`.
+   as any other scratch file under `~/Projects/`. Separately: when you
+   actually call the Obsidian MCP tools to read vault context for this task —
+   the meaningful first read, not every incidental glance back — append a
+   `tool-use` line to the same file:
+   `{"ts":"<ISO8601>","agent":"people-lead","tool":"tool-obsidian","status":"tool-use"}`.
+   Do the same for any other real, meaningful use of a Tools-layer grant on
+   this file's `tools:` line — invoking any installed skill via the Skill tool
+   (`"tool":"tool-skill"`) — swapping in the matching `tool` id each time.
+   This is a rare, deliberate signal, not a log line for every low-level
+   Read/Grep/Bash call.
 2. Draft job/contractor descriptions and onboarding docs against the actual
    scope of a tracked project in `Company/Projects.md`, not a generic
    template with placeholders left unfilled.

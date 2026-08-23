@@ -49,7 +49,16 @@ request alone rather than failing silently.
    Tier 3), append a matching line with `status: "done"` (or `"blocked"` + a
    one-line `detail`). This is Tier 1 autonomous — it's an append-only write
    to project-output, same bucket as any other scratch file under
-   `~/Projects/`.
+   `~/Projects/`. Separately: when you actually call the Obsidian MCP tools to
+   read vault context for this task — the meaningful first read, not every
+   incidental glance back — append a `tool-use` line to the same file:
+   `{"ts":"<ISO8601>","agent":"sales-lead","tool":"tool-obsidian","status":"tool-use"}`.
+   Do the same for any other real, meaningful use of a Tools-layer grant on
+   this file's `tools:` line — a real Discord read (`"tool":"tool-discord"`);
+   invoking any installed skill via the Skill tool (`"tool":"tool-skill"`);
+   the `adobe-create-social-variations` skill (`"tool":"tool-adobe-social"`) —
+   swapping in the matching `tool` id each time. This is a rare, deliberate
+   signal, not a log line for every low-level Read/Grep/Bash call.
 4. Write direct, specific, non-salesy copy — no hype language.
 5. Save the draft as a note in the vault under `Sales/` via the Obsidian MCP
    create/write tool (fall back to the Write tool if the MCP server is

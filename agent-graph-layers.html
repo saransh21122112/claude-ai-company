@@ -805,9 +805,16 @@
 
     edges.forEach(e => {
       const a = byId[e.a], b = byId[e.b];
-      const dim = focusSet && !(focusSet.has(a.id) && focusSet.has(b.id));
+      // A genuinely in-flight edge (an agent actively working on it) stays
+      // fully visible regardless of hover focus — hover-dim is a tooltip
+      // aid for decluttering unrelated edges, not a status indicator, and
+      // must never mask "who's actually active right now". Without the
+      // liveEdges exemption here, hovering ANY node while multiple agents
+      // are concurrently active dims every other agent's activation edge
+      // down to ~0.07 alpha, visually reading as "only one agent active".
+      const dim = focusSet && !(focusSet.has(a.id) && focusSet.has(b.id)) && !liveEdges.has(e);
 
-      if (liveEdges.has(e) && !dim) {
+      if (liveEdges.has(e)) {
         const child = byId[e.b];
         drawActivation(e, child.group === "hub" ? HUB_HUE : child.hue);
       } else {
@@ -869,7 +876,12 @@
       n.pulse *= 0.94;
       const rBase = radius[n.group] + (degree[n.id] ? Math.min(degree[n.id], 6) * 0.6 : 0);
       const r = rBase * (0.35 + 0.65 * n.entrance);
-      const dim = focusSet && !focusSet.has(n.id);
+      // Same exemption as the edge loop above: an actively-working agent's
+      // node (and its breathing ring, drawn further down under this same
+      // globalAlpha) must stay fully visible even when hovering a different,
+      // unrelated node — otherwise every other concurrently-active agent
+      // fades to ~0.22 alpha and the graph reads as only one agent active.
+      const dim = focusSet && !focusSet.has(n.id) && !activeAgents.has(n.id);
 
       ctx.save();
       ctx.globalAlpha = dim ? 0.22 : 1;
@@ -969,6 +981,7 @@
     done: { verb: "finished", cls: "st-done" },
     blocked: { verb: "is blocked", cls: "st-blocked" },
     handoff: { verb: "handed off to", cls: "st-active" },
+    "tool-use": { verb: "used", cls: "st-active" },
   };
 
   function renderDetailPanel() {
@@ -1205,10 +1218,17 @@
     let targetNode = null;
     if (evt.status === "handoff" && evt.detail && evt.detail.startsWith("to:")) {
       targetNode = byId[evt.detail.slice(3).trim()];
+    } else if (evt.status === "tool-use" && evt.tool) {
+      targetNode = byId[evt.tool];
     }
     if (targetNode) {
       targetNode.pulse = 1;
-      activeAgents.set(targetNode.id, Date.now());
+      // A tool node isn't a "working agent" — only handoff targets get the
+      // persistent activeAgents/breathing-ring treatment. A tool-use event
+      // is momentary: the flyAlong() dot riding the edge below (with its
+      // own hover-dim exemption via e._flight, same as any other flight) is
+      // the whole signal, same brief treatment a "done" reverse-flight gets.
+      if (evt.status === "handoff") activeAgents.set(targetNode.id, Date.now());
       flyAlong(edgeBetween(agentNode.id, targetNode.id), false);
     } else {
       flyAlong(edgeBetween(agentNode.id, HUB), evt.status === "done");

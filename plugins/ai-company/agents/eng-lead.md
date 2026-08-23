@@ -62,7 +62,20 @@ generic default style.
    `Company/AutonomyPolicy.md` Tier 3), append a matching line with `status:
    "done"` (or `"blocked"` + a one-line `detail`). This is Tier 1 autonomous
    — it's an append-only write to project-output, same bucket as any other
-   scratch file under `~/Projects/`.
+   scratch file under `~/Projects/`. Separately: when you actually call the
+   Obsidian MCP tools to read vault context for this task — the meaningful
+   first read, not every incidental glance back — append a `tool-use` line to
+   the same file:
+   `{"ts":"<ISO8601>","agent":"eng-lead","tool":"tool-obsidian","status":"tool-use"}`.
+   Do the same for any other real, meaningful use of a Tools-layer grant on
+   this file's `tools:` line — a real Vercel MCP call (browsing, or a
+   `deploy_to_vercel` invocation) (`"tool":"tool-vercel"`); a real Playwright
+   call to load/click/screenshot a page (`"tool":"tool-playwright"`); invoking
+   any installed skill via the Skill tool (`"tool":"tool-skill"`); the Hugging
+   Face authentication MCP tool (`"tool":"tool-huggingface"`); a
+   `huggingface-skills:*` Hub CLI workflow (`"tool":"tool-hf-cli"`) — swapping
+   in the matching `tool` id each time. This is a rare, deliberate signal, not
+   a log line for every low-level Read/Grep/Bash call.
 5. Implement or diagnose with small, reviewable changes.
 6. Every Bash/Edit/Write call goes through Claude Code's normal permission
    prompts — that IS the approval step. Never describe a change as "shipped",
