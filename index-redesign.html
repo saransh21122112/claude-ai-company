@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Company Graph — Constellation</title>
+<style>
+  :root {
+    --bg: #06070d;
+    --bg-2: #0a0d18;
+    --panel: rgba(12, 15, 26, 0.78);
+    --panel-border: rgba(148, 163, 220, 0.14);
+    --ink: #e8ebf5;
+    --ink-dim: #8991ab;
+    --ink-faint: #565d78;
+    --accent: #7c9dff;
+    --accent-soft: rgba(124, 157, 255, 0.5);
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--ink);
+  }
+
+  #stars, #graph {
+    position: fixed;
+    inset: 0;
+    display: block;
+    width: 100vw;
+    height: 100vh;
+  }
+  #stars { z-index: 0; }
+  #graph { z-index: 1; cursor: grab; }
+  #graph.dragging { cursor: grabbing; }
+
+  .panel {
+    position: fixed;
+    z-index: 2;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+  }
+
+  #hud {
+    top: 20px;
+    left: 20px;
+    width: 300px;
+    padding: 18px 20px;
+    pointer-events: none;
+  }
+
+  #hud .title {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  #hud h1 {
+    margin: 0 0 8px;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+  }
+
+  #hud .hint {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--ink-dim);
+    margin-bottom: 14px;
+  }
+
+  .section-label {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin: 14px 0 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--panel-border);
+  }
+  .section-label:first-of-type { padding-top: 0; border-top: none; margin-top: 0; }
+
+  #legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+  }
+
+  .legend-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 11.5px;
+    color: var(--ink-dim);
+  }
+
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px currentColor;
+  }
+
+  #activity-feed {
+    max-height: 220px;
+    overflow-y: auto;
+    pointer-events: auto;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+  }
+  #activity-feed::-webkit-scrollbar { width: 4px; }
+  #activity-feed::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 2px; }
+
+  .activity-row {
+    font-size: 11px;
+    line-height: 1.45;
+    padding: 6px 0 6px 10px;
+    margin-bottom: 4px;
+    border-left: 2px solid var(--ink-faint);
+    color: var(--ink-dim);
+  }
+  .activity-row.st-done { border-color: #3ddc84; }
+  .activity-row.st-blocked { border-color: #ff5c7a; }
+  .activity-row.st-active { border-color: #ffb454; }
+
+  .activity-row .who { color: var(--accent); font-weight: 600; }
+  .activity-row .badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+  .st-done .badge { color: #3ddc84; background: rgba(61,220,132,0.12); }
+  .st-blocked .badge { color: #ff5c7a; background: rgba(255,92,122,0.12); }
+  .st-active .badge { color: #ffb454; background: rgba(255,180,84,0.12); }
+  .activity-row .when { color: var(--ink-dim); font-size: 10px; display: block; margin-top: 1px; }
+
+  #status {
+    bottom: 20px;
+    left: 20px;
+    padding: 8px 14px;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 10.5px;
+    color: var(--ink-dim);
+    letter-spacing: 0.02em;
+  }
+  #status .live-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #3ddc84;
+    margin-right: 6px;
+    box-shadow: 0 0 6px #3ddc84;
+  }
+
+  #tooltip {
+    position: fixed;
+    z-index: 5;
+    pointer-events: none;
+    background: rgba(10, 13, 24, 0.96);
+    border: 1px solid var(--accent-soft);
+    border-radius: 8px;
+    padding: 7px 11px;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 12px;
+    color: var(--ink);
+    display: none;
+    white-space: nowrap;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<canvas id="graph"></canvas>
+
+<div id="hud" class="panel">
+  <div class="title">AI Company</div>
+  <h1>Constellation</h1>
+  <div class="hint">Drag to reposition · scroll to zoom · click a node to pin its connections.</div>
+  <div class="section-label">Legend</div>
+  <div id="legend"></div>
+  <div class="section-label">Live activity</div>
+  <div id="activity-feed"></div>
+</div>
+
+<div id="tooltip"></div>
+<div id="status" class="panel"><span class="live-dot"></span>loading graph-data.json…</div>
+
+<script>
+(function () {
+  const canvas = document.getElementById('graph');
+  const ctx = canvas.getContext('2d');
+  const starsCanvas = document.getElementById('stars');
+  const starsCtx = starsCanvas.getContext('2d');
+  const tooltip = document.getElementById('tooltip');
+  const statusEl = document.getElementById('status');
+  const legendEl = document.getElementById('legend');
+
+  // Redesigned palette: cooler indigo base, warmer accent for activity so
+  // "something just happened" reads distinctly from steady-state structure.
+  const COLORS = {
+    hub: '#f5f0e6',
+    department: '#7c9dff',
+    agent: '#3ce6c2',
+    'project-in-progress': '#ffb454',
+    'project-done': '#3ddc84',
+    'project-blocked': '#ff5c7a',
+    leaf: '#6b7290',
+    link: 'rgba(124, 157, 255, 0.16)',
+    linkHighlight: 'rgba(232, 235, 245, 0.85)',
+    activePulse: '#ffffff',
+    flashDone: '#3ddc84',
+    flashBlocked: '#ff5c7a',
+    workingOn: '#3ce6c2',
+    handoff: '#d9a7ff'
+  };
+
+  legendEl.innerHTML = `
+    <div class="legend-row"><span class="dot" style="background:${COLORS.hub};color:${COLORS.hub}"></span>Core doc</div>
+    <div class="legend-row"><span class="dot" style="background:${COLORS.department};color:${COLORS.department}"></span>Department</div>
+    <div class="legend-row"><span class="dot" style="background:${COLORS.agent};color:${COLORS.agent}"></span>Agent</div>
+    <div class="legend-row"><span class="dot" style="background:${COLORS['project-in-progress']};color:${COLORS['project-in-progress']}"></span>Project — in progress</div>
+    <div class="legend-row"><span class="dot" style="background:${COLORS['project-done']};color:${COLORS['project-done']}"></span>Project — done</div>
+    <div class="legend-row"><span class="dot" style="background:${COLORS['project-blocked']};color:${COLORS['project-blocked']}"></span>Project — blocked</div>
+    <div class="legend-row"><span class="dot" style="background:${COLORS.leaf};color:${COLORS.leaf}"></span>Sub-agent / tool</div>
+    <div class="legend-row"><span class="dot" style="background:${COLORS.activePulse};color:${COLORS.activePulse}"></span>Active task right now</div>
+    <div class="legend-row"><span class="dot" style="background:${COLORS.workingOn};color:${COLORS.workingOn}"></span>Agent → target</div>
+    <div class="legend-row"><span class="dot" style="background:${COLORS.handoff};color:${COLORS.handoff}"></span>Agent → agent handoff</div>
+  `;
+
+  let width, height;
+  function resize() {
+    width = canvas.width = starsCanvas.width = window.innerWidth;
+    height = canvas.height = starsCanvas.height = window.innerHeight;
+    drawStars();
+  }
+
+  // Static starfield backdrop — cheap, drawn once per resize, not per frame.
+  // Purely decorative: reinforces "constellation" without competing with
+  // the live graph's own glow/motion.
+  let starSeedPoints = null;
+  function drawStars() {
+    if (!starSeedPoints || starSeedPoints.__w !== width || starSeedPoints.__h !== height) {
+      const n = Math.round((width * height) / 9000);
+      starSeedPoints = Array.from({ length: n }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: Math.random() * 1.1 + 0.2,
+        a: Math.random() * 0.5 + 0.15
+      }));
+      starSeedPoints.__w = width;
+      starSeedPoints.__h = height;
+    }
+    const grad = starsCtx.createRadialGradient(width * 0.5, height * 0.35, 0, width * 0.5, height * 0.35, Math.max(width, height) * 0.75);
+    grad.addColorStop(0, '#0d1120');
+    grad.addColorStop(1, '#06070d');
+    starsCtx.fillStyle = grad;
+    starsCtx.fillRect(0, 0, width, height);
+    starSeedPoints.forEach(s => {
+      starsCtx.globalAlpha = s.a;
+      starsCtx.fillStyle = '#cdd6f4';
+      starsCtx.beginPath();
+      starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      starsCtx.fill();
+    });
+    starsCtx.globalAlpha = 1;
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+
+  let nodes = [];   // { id, label, type, status, x, y, vx, vy, r, degree }
+  let links = [];   // { source: nodeRef, target: nodeRef }
+  let nodeById = {};
+
+  function colorFor(node) {
+    if (node.type === 'project') {
+      return COLORS['project-' + (node.status || 'in-progress')] || COLORS.leaf;
+    }
+    return COLORS[node.type] || COLORS.leaf;
+  }
+
+  function mergeData(data) {
+    const incomingIds = new Set(data.nodes.map(n => n.id));
+
+    nodes = nodes.filter(n => incomingIds.has(n.id));
+    nodeById = {};
+    nodes.forEach(n => { nodeById[n.id] = n; });
+
+    data.nodes.forEach(n => {
+      if (nodeById[n.id]) {
+        Object.assign(nodeById[n.id], { label: n.label, type: n.type, status: n.status });
+      } else {
+        const node = {
+          id: n.id,
+          label: n.label,
+          type: n.type,
+          status: n.status,
+          x: width / 2 + (Math.random() - 0.5) * 200,
+          y: height / 2 + (Math.random() - 0.5) * 200,
+          vx: 0,
+          vy: 0,
+          degree: 0
+        };
+        nodes.push(node);
+        nodeById[n.id] = node;
+      }
+    });
+
+    links = data.links
+      .filter(l => nodeById[l.source] && nodeById[l.target])
+      .map(l => ({ source: nodeById[l.source], target: nodeById[l.target] }));
+
+    nodes.forEach(n => { n.degree = 0; });
+    links.forEach(l => { l.source.degree++; l.target.degree++; });
+    nodes.forEach(n => {
+      n.r = (n.type === 'hub' ? 10 : n.type === 'leaf' ? 4 : 6) + Math.min(n.degree, 10) * 1.1;
+    });
+  }
+
+  async function fetchData() {
+    try {
+      const res = await fetch('/api/graph?_=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      mergeData(data);
+      statusEl.innerHTML = `<span class="live-dot"></span>${nodes.length} nodes, ${links.length} links — live via /api/graph — ${new Date().toLocaleTimeString()}`;
+      return;
+    } catch (err) {
+      // fall through to static file
+    }
+    try {
+      const res = await fetch('graph-data.json?_=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      mergeData(data);
+      statusEl.innerHTML = `<span class="live-dot" style="background:#ffb454;box-shadow:0 0 6px #ffb454"></span>${nodes.length} nodes, ${links.length} links — static snapshot (no /api/graph reachable) — ${new Date().toLocaleTimeString()}`;
+    } catch (err) {
+      statusEl.innerHTML = `<span class="live-dot" style="background:#ff5c7a;box-shadow:0 0 6px #ff5c7a"></span>Could not load graph data (${err.message}).`;
+    }
+  }
+
+  fetchData();
+  setInterval(fetchData, 4000);
+
+  // --- Live activity feed (activity-log.jsonl) ---
+  const ACTIVE_WINDOW_MS = 90 * 1000;
+  const FLASH_WINDOW_MS = 10 * 1000;
+  const activityFeedEl = document.getElementById('activity-feed');
+  let activityEvents = [];
+
+  function findNodeForEvent(ev) {
+    const proj = (ev.project || '').trim().toLowerCase();
+    const dept = (ev.department || '').trim().toLowerCase();
+    if (proj) {
+      const hit = nodes.find(n => n.type === 'project' && n.label.toLowerCase() === proj);
+      if (hit) return hit;
+    }
+    if (dept) {
+      const hit = nodes.find(n => n.type === 'department' && n.label.toLowerCase() === dept);
+      if (hit) return hit;
+    }
+    return null;
+  }
+
+  function findAgentNode(agentName) {
+    const name = (agentName || '').trim().toLowerCase();
+    if (!name) return null;
+    return nodes.find(n => n.type === 'agent' && n.label.toLowerCase() === name)
+      || nodeById['agent-' + name]
+      || null;
+  }
+
+  function parseHandoffTarget(ev) {
+    if (ev.status !== 'handoff') return null;
+    const m = /^to:\s*([a-z0-9-]+)/i.exec(ev.detail || '');
+    return m ? findAgentNode(m[1]) : null;
+  }
+
+  async function fetchActivity() {
+    try {
+      const res = await fetch('/api/activity?limit=100&_=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      activityEvents = await res.json();
+      renderActivityFeed();
+      return;
+    } catch (err) {
+      // fall through to static file
+    }
+    try {
+      const res = await fetch('activity-log.jsonl?_=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      activityEvents = text.split('\n').filter(Boolean).map(line => {
+        try { return JSON.parse(line); } catch (e) { return null; }
+      }).filter(Boolean);
+      renderActivityFeed();
+    } catch (err) {
+      // Non-fatal — activity log is optional.
+    }
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function timeAgo(ts) {
+    const ms = Date.now() - new Date(ts).getTime();
+    const s = Math.round(ms / 1000);
+    if (s < 5) return 'just now';
+    if (s < 60) return s + 's ago';
+    const m = Math.round(s / 60);
+    if (m < 60) return m + 'm ago';
+    return Math.round(m / 60) + 'h ago';
+  }
+
+  function renderActivityFeed() {
+    const recent = activityEvents.slice(-6).reverse();
+    activityFeedEl.innerHTML = recent.map(ev => {
+      const cls = ev.status === 'done' ? 'st-done'
+        : ev.status === 'blocked' ? 'st-blocked'
+        : 'st-active';
+      const scope = esc(ev.project || ev.department || '');
+      return `<div class="activity-row ${cls}">
+        <span class="who">${esc(ev.agent)}</span>${scope ? ' · ' + scope : ''} — ${esc(ev.task)}
+        <span class="badge">${esc(ev.status)}</span>
+        <span class="when">${timeAgo(ev.ts)}</span>
+      </div>`;
+    }).join('') || '<div class="activity-row">no activity logged yet</div>';
+  }
+
+  fetchActivity();
+  setInterval(fetchActivity, 4000);
+
+  // --- Force simulation (unchanged tuning from the original — proven at
+  // ~32 nodes; the redesign is a visual pass, not a physics rewrite) ---
+  const REPEL = 3600;
+  const SPRING_LEN = 120;
+  const SPRING_K = 0.02;
+  const CENTER_K = 0.004;
+  const DAMPING = 0.85;
+  const MAX_V = 40;
+
+  let dragNode = null;
+  let hoverNode = null;
+  let pinnedNode = null;
+  let mouseX = 0, mouseY = 0;
+  let scale = 1;
+  let panX = 0, panY = 0;
+  let mouseDownX = 0, mouseDownY = 0, mouseDownWasDrag = false;
+
+  function toWorld(sx, sy) {
+    return { x: (sx - panX - width / 2) / scale + width / 2, y: (sy - panY - height / 2) / scale + height / 2 };
+  }
+
+  function step() {
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        let dx = a.x - b.x, dy = a.y - b.y;
+        let distSq = dx * dx + dy * dy;
+        if (distSq < 1) distSq = 1;
+        const dist = Math.sqrt(distSq);
+        const force = REPEL / distSq;
+        const fx = (dx / dist) * force;
+        const fy = (dy / dist) * force;
+        a.vx += fx; a.vy += fy;
+        b.vx -= fx; b.vy -= fy;
+      }
+    }
+
+    links.forEach(l => {
+      const a = l.source, b = l.target;
+      let dx = b.x - a.x, dy = b.y - a.y;
+      const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
+      const diff = dist - SPRING_LEN;
+      const force = diff * SPRING_K;
+      const fx = (dx / dist) * force;
+      const fy = (dy / dist) * force;
+      a.vx += fx; a.vy += fy;
+      b.vx -= fx; b.vy -= fy;
+    });
+
+    nodes.forEach(n => {
+      n.vx += (width / 2 - n.x) * CENTER_K;
+      n.vy += (height / 2 - n.y) * CENTER_K;
+    });
+
+    nodes.forEach(n => {
+      if (n === dragNode) return;
+      n.vx *= DAMPING;
+      n.vy *= DAMPING;
+      const speed = Math.hypot(n.vx, n.vy);
+      if (speed > MAX_V) {
+        n.vx = (n.vx / speed) * MAX_V;
+        n.vy = (n.vy / speed) * MAX_V;
+      }
+      n.x += n.vx;
+      n.y += n.vy;
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.save();
+    ctx.translate(width / 2 + panX, height / 2 + panY);
+    ctx.scale(scale, scale);
+    ctx.translate(-width / 2, -height / 2);
+
+    const focusNode = pinnedNode || hoverNode;
+    const neighbors = new Set();
+    if (focusNode) {
+      neighbors.add(focusNode);
+      links.forEach(l => {
+        if (l.source === focusNode) neighbors.add(l.target);
+        if (l.target === focusNode) neighbors.add(l.source);
+      });
+    }
+
+    // Links — thin hairlines, consistent with a constellation's faint
+    // connecting lines rather than the original's slightly heavier strokes.
+    links.forEach(l => {
+      const isHighlighted = focusNode && (l.source === focusNode || l.target === focusNode);
+      ctx.strokeStyle = isHighlighted ? COLORS.linkHighlight : COLORS.link;
+      ctx.lineWidth = isHighlighted ? 1.4 : 0.7;
+      ctx.beginPath();
+      ctx.moveTo(l.source.x, l.source.y);
+      ctx.lineTo(l.target.x, l.target.y);
+      ctx.stroke();
+    });
+
+    // Nodes — star-like: soft outer glow, bright core, thin ring for
+    // hubs/departments so the "important" nodes read at a glance even when
+    // zoomed out.
+    nodes.forEach(n => {
+      const dimmed = focusNode && !neighbors.has(n);
+      const color = colorFor(n);
+
+      ctx.save();
+      ctx.globalAlpha = dimmed ? 0.22 : 1;
+
+      const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 3.4);
+      grad.addColorStop(0, color);
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r * 3.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (n.type === 'hub' || n.type === 'department') {
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r + 3, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      if (n.type === 'hub' || n.type === 'department' || n.type === 'agent' || neighbors.has(n) || !focusNode) {
+        ctx.globalAlpha = dimmed ? 0.3 : 0.92;
+        ctx.fillStyle = '#eef1fb';
+        ctx.font = (n.type === 'hub' ? '600 ' : '500 ') + '12px -apple-system, "Segoe UI", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(n.label, n.x, n.y - n.r - 7);
+      }
+
+      ctx.restore();
+    });
+
+    const now = Date.now();
+
+    function pulseRing(node, color) {
+      const phase = (now / 500) % (Math.PI * 2);
+      const pulseR = node.r + 6 + Math.sin(phase) * 4;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = 0.55 + Math.sin(phase) * 0.25;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, pulseR, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function flashRing(node, color, t) {
+      const flashR = node.r + 4 + t * 26;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = 1 - t;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, flashR, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function animatedEdge(a, b, color, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 5]);
+      ctx.lineDashOffset = -(now / 40) % 11;
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    activityEvents.forEach(ev => {
+      const target = findNodeForEvent(ev);
+      const agentNode = findAgentNode(ev.agent);
+      const age = now - new Date(ev.ts).getTime();
+      const isActive = (ev.status === 'start' || ev.status === 'started' || ev.status === 'in-progress') && age < ACTIVE_WINDOW_MS;
+      const isFinished = (ev.status === 'done' || ev.status === 'blocked') && age < FLASH_WINDOW_MS;
+
+      if (isActive) {
+        if (agentNode) pulseRing(agentNode, COLORS.activePulse);
+        if (target) pulseRing(target, COLORS.activePulse);
+        if (agentNode && target) animatedEdge(agentNode, target, COLORS.workingOn, 0.8);
+      } else if (isFinished) {
+        const t = age / FLASH_WINDOW_MS;
+        const color = ev.status === 'done' ? COLORS.flashDone : COLORS.flashBlocked;
+        if (agentNode) flashRing(agentNode, color, t);
+        if (target) flashRing(target, color, t);
+        if (agentNode && target) animatedEdge(agentNode, target, color, 1 - t);
+      }
+
+      const handoffTarget = parseHandoffTarget(ev);
+      if (handoffTarget && agentNode && age < FLASH_WINDOW_MS) {
+        const t = age / FLASH_WINDOW_MS;
+        flashRing(agentNode, COLORS.handoff, t);
+        flashRing(handoffTarget, COLORS.handoff, t);
+        animatedEdge(agentNode, handoffTarget, COLORS.handoff, 1 - t * 0.3);
+      }
+    });
+
+    ctx.restore();
+  }
+
+  function loop() {
+    step();
+    draw();
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  // --- Interaction: hover + drag + zoom + click-to-pin (unchanged) ---
+  function nodeAt(worldX, worldY) {
+    for (let i = nodes.length - 1; i >= 0; i--) {
+      const n = nodes[i];
+      const dx = n.x - worldX, dy = n.y - worldY;
+      if (dx * dx + dy * dy <= (n.r + 4) * (n.r + 4)) return n;
+    }
+    return null;
+  }
+
+  canvas.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    const world = toWorld(mouseX, mouseY);
+    if (dragNode) {
+      if (Math.hypot(mouseX - mouseDownX, mouseY - mouseDownY) > 4) mouseDownWasDrag = true;
+      dragNode.x = world.x;
+      dragNode.y = world.y;
+      dragNode.vx = 0;
+      dragNode.vy = 0;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (mouseX + 14) + 'px';
+      tooltip.style.top = (mouseY + 14) + 'px';
+      let extra = '';
+      if (dragNode.type === 'project') extra = ' — ' + (dragNode.status || 'unknown');
+      tooltip.textContent = dragNode.label + extra;
+      return;
+    }
+    const hit = nodeAt(world.x, world.y);
+    hoverNode = hit;
+    if (hit) {
+      tooltip.style.display = 'block';
+      tooltip.style.left = (mouseX + 14) + 'px';
+      tooltip.style.top = (mouseY + 14) + 'px';
+      let extra = '';
+      if (hit.type === 'project') extra = ' — ' + (hit.status || 'unknown');
+      if (hit.type === 'agent') extra = ' — click to pin its connections';
+      tooltip.textContent = hit.label + extra;
+      canvas.style.cursor = 'pointer';
+    } else {
+      tooltip.style.display = 'none';
+      canvas.style.cursor = 'grab';
+    }
+  });
+
+  canvas.addEventListener('mousedown', (e) => {
+    mouseDownX = e.clientX;
+    mouseDownY = e.clientY;
+    mouseDownWasDrag = false;
+    const world = toWorld(e.clientX, e.clientY);
+    const hit = nodeAt(world.x, world.y);
+    if (hit) {
+      dragNode = hit;
+      canvas.classList.add('dragging');
+    }
+  });
+
+  window.addEventListener('mouseup', (e) => {
+    if (dragNode && !mouseDownWasDrag) {
+      pinnedNode = pinnedNode === dragNode ? null : dragNode;
+    } else if (!dragNode) {
+      pinnedNode = null;
+    }
+    dragNode = null;
+    canvas.classList.remove('dragging');
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    hoverNode = null;
+    tooltip.style.display = 'none';
+  });
+
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const worldBefore = toWorld(e.clientX, e.clientY);
+    const factor = Math.exp(-e.deltaY * 0.001);
+    scale = Math.min(3, Math.max(0.35, scale * factor));
+    panX = e.clientX - width / 2 - (worldBefore.x - width / 2) * scale;
+    panY = e.clientY - height / 2 - (worldBefore.y - height / 2) * scale;
+  }, { passive: false });
+})();
+</script>
+
+</body>
+</html>

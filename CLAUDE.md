@@ -77,9 +77,25 @@ rule as `code-reviewer`/`frontend-developer`/`backend-developer`/
 `ui-ux-designer`. Reachable only via `Task` delegation, no dedicated
 `/command`, same as those four.
 
+**Three more departments (2026-08-23 addition):** `security-lead` (security
+review/threat-modeling, mirrors `qa-lead`'s relationship to `eng-lead` —
+never patches, hands vulnerabilities to `eng-lead`) → sub-agent
+`security-reviewer` (read-only first-pass scan, mirrors `code-reviewer`).
+`marketing-lead` (brand voice/content strategy/campaign planning, distinct
+from `sales-lead`'s one-to-one outreach copy) → sub-agent `content-writer`
+(writes standing content pieces against a brief). `people-lead`
+(hiring/contributor-ops drafting — job descriptions, interview plans,
+onboarding — never an actual hire/offer/termination decision) → sub-agent
+`candidate-screener` (read-only fit-against-criteria check, no PII
+persistence, no hire recommendation). Same one-lead-one-sub-agent,
+`Task`-delegated, scope-narrows-never-widens pattern as the other 10
+leads. Charters at `Company/Departments/Security.md`, `Marketing.md`,
+`People.md`.
+
 Commands: `/eng`, `/product`, `/research`, `/ops`, `/design`, `/data`,
-`/sales`, `/legal`, `/finance`, `/support`, `/qa`, `/swe` (direct department
-routing), `/company` (dispatcher for ambiguous/cross-department requests).
+`/sales`, `/legal`, `/finance`, `/support`, `/qa`, `/swe`, `/security`,
+`/marketing`, `/people` (direct department routing), `/company` (dispatcher
+for ambiguous/cross-department requests).
 
 **`/git-commit` (2026-08-21 addition, moved into `org-tools` 2026-08-21):**
 lives at `plugins/org-tools/commands/git-commit.md`, not in this plugin —

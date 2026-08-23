@@ -12,6 +12,8 @@ const PORT = process.env.PORT || 8643;
 const ROOT = __dirname;
 const LOG_FILE = path.join(ROOT, "plugins/ai-company/activity-log.jsonl");
 const PAGE_FILE = path.join(ROOT, "agent-graph.html");
+const REDESIGN_PAGE_FILE = path.join(ROOT, "agent-graph-redesign.html");
+const LAYERS_PAGE_FILE = path.join(ROOT, "agent-graph-layers.html");
 
 function readActivity(limit) {
   if (!fs.existsSync(LOG_FILE)) return [];
@@ -41,6 +43,24 @@ const server = http.createServer((req, res) => {
   if (url.pathname === "/" || url.pathname === "/agent-graph.html") {
     fs.readFile(PAGE_FILE, (err, data) => {
       if (err) { res.writeHead(404); res.end("agent-graph.html not found"); return; }
+      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
+      res.end(data);
+    });
+    return;
+  }
+
+  if (url.pathname === "/agent-graph-redesign.html") {
+    fs.readFile(REDESIGN_PAGE_FILE, (err, data) => {
+      if (err) { res.writeHead(404); res.end("agent-graph-redesign.html not found"); return; }
+      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
+      res.end(data);
+    });
+    return;
+  }
+
+  if (url.pathname === "/agent-graph-layers.html") {
+    fs.readFile(LAYERS_PAGE_FILE, (err, data) => {
+      if (err) { res.writeHead(404); res.end("agent-graph-layers.html not found"); return; }
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
       res.end(data);
     });

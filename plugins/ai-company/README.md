@@ -1,11 +1,12 @@
 # ai-company
 
 An in-house AI company for one person, built as a Claude Code plugin.
-Department agents (engineering, research & content, business ops, sales &
-marketing, legal, finance, support, QA) draft and deliver work grounded in
-company context stored as notes in an Obsidian vault — every action still
-goes through Claude Code's normal permission prompts, so nothing happens
-without human approval.
+Department agents (engineering, software engineering, product, research,
+operations, design, data, sales, marketing, legal, finance, support, QA,
+security, people) draft and deliver work grounded in company context
+stored as notes in an Obsidian vault — every action still goes through
+Claude Code's normal permission prompts, so nothing happens without human
+approval.
 
 `~/.claude/CLAUDE.md` (global) carries a quick-orientation summary of this
 whole setup so a new session doesn't start from zero — it's a cache, not
@@ -41,18 +42,20 @@ can't be scripted.
   write vault notes.
 - `agents/` — one subagent per department: `eng-lead`, `product-lead`,
   `researcher`, `ops-manager`, `design-lead`, `data-lead`, `sales-lead`,
-  `legal-lead`, `finance-lead`, `support-lead`, `qa-lead`. Each reads its
-  context from the vault before starting work. Departments can also have
-  narrower, deeper sub-agents for low-risk slices of their work — e.g.
-  `code-reviewer` (read-only, no Edit/Write/Bash) under Engineering — see
-  `Company/AutonomyPolicy.md` for how these relate to autonomy tiers.
-  `product-lead`, `ops-manager`, and `qa-lead` also hold the `Task` tool so
-  they can hand work directly to another department agent instead of only
-  naming it in text.
+  `legal-lead`, `finance-lead`, `support-lead`, `qa-lead`, `swe-lead`,
+  `security-lead`, `marketing-lead`, `people-lead`. Each reads its context
+  from the vault before starting work. Departments can also have narrower,
+  deeper sub-agents for low-risk slices of their work — e.g. `code-reviewer`
+  (read-only, no Edit/Write/Bash) under Engineering, `security-reviewer`
+  under Security, `content-writer` under Marketing, `candidate-screener`
+  under People — see `Company/AutonomyPolicy.md` for how these relate to
+  autonomy tiers. Every lead holds the `Task` tool so it can hand work
+  directly to another department agent instead of only naming it in text.
 - `commands/` — `/eng`, `/product`, `/research`, `/ops`, `/design`, `/data`,
-  `/sales`, `/legal`, `/finance`, `/support`, `/qa` for direct department
-  requests, plus `/company` as a dispatcher for requests that are ambiguous
-  or span multiple departments.
+  `/sales`, `/legal`, `/finance`, `/support`, `/qa`, `/swe`, `/security`,
+  `/marketing`, `/people` for direct department requests, plus `/company`
+  as a dispatcher for requests that are ambiguous or span multiple
+  departments.
 
 ## Cross-plugin tools
 
@@ -107,6 +110,9 @@ AI-Company-Vault/
       Finance.md
       Support.md
       QA.md
+      Security.md
+      Marketing.md
+      People.md
   Research/             ← researcher agent saves finished docs here
   Sales/                ← sales-lead agent saves drafts here
 ```
@@ -163,6 +169,9 @@ silently — the plugin degrades gracefully, it doesn't hard-require Obsidian.
 /finance "draft a rough budget for running Pulse next quarter"
 /support "draft a response to a user asking why their export failed"
 /qa "write a test plan for the CSV export feature in Project Atlas"
+/security "security review the auth changes before we merge them"
+/marketing "plan a content calendar for the Pulse launch"
+/people "draft a contractor job description for a part-time frontend dev on Pulse"
 ```
 
 ## Current constraints

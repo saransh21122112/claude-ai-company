@@ -2,3 +2,4 @@
 *.log
 node_modules/
 plugins/ai-company/activity-log.jsonl
+.playwright-mcp/

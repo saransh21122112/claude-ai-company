@@ -21,8 +21,11 @@ $ARGUMENTS
    - Business ops/admin → `ops-manager` agent
    - Design / brand → `design-lead` agent
    - Data & analytics → `data-lead` agent
-   - Sales/outreach/marketing → `sales-lead` agent
+   - Sales/outreach → `sales-lead` agent
    - Frontend/backend implementation or UI/UX design → `swe-lead` agent
+   - Security review/threat-modeling → `security-lead` agent
+   - Brand voice/content strategy/campaign planning → `marketing-lead` agent
+   - Hiring/contributor-ops drafting → `people-lead` agent
 3. **Single department**: invoke that agent directly with the request.
 4. **Multiple departments**: do NOT invoke every agent immediately. First
    present a short consolidated plan — which departments are involved, what
