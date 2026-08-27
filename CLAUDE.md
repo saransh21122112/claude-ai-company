@@ -123,7 +123,13 @@ use this convention.
 - `design-lead`: Playwright, `Skill` + Adobe for Creativity auth (asset
   production: photo batch-edit, PDF-from-data, social image variations,
   template design, quick video cuts, resize, retouch); `frontend-design`
-  skill for aesthetic direction
+  skill for aesthetic direction. **Adobe for Creativity plugin disabled**
+  (2026-08-27) in `~/.claude/settings.json`
+  (`adobe-for-creativity@claude-plugins-official: false`) — its MCP
+  endpoint rejects Dynamic Client Registration with HTTP 403, so the OAuth
+  flow can't even start (server-side, not a config problem). Re-enable by
+  flipping the flag once Adobe fixes registration. The `adobe-*` skills
+  stay listed but are inert while disabled.
 - `data-lead`: Vercel MCP, `Skill` (Hugging Face dataset-viewer skills for
   external dataset stats)
 - `researcher`: `Skill` (`huggingface-papers`, `huggingface-best` for
