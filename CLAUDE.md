@@ -132,9 +132,14 @@ use this convention.
   marketing image assets)
 - `ops-manager`: `Skill` (`ralph-loop` for proposing recurring check-ins —
   propose, don't auto-start one)
-- `code-reviewer`: Greptile (needs `GREPTILE_API_KEY`, not yet configured).
-  Deliberately has no `Skill` tool — it stays read-only by construction and
-  granting `Skill` would break that guarantee.
+- `code-reviewer`: Greptile — **plugin disabled** (2026-08-27) in
+  `~/.claude/settings.json` (`greptile@claude-plugins-official: false`)
+  because `GREPTILE_API_KEY` was never configured and the unauth'd MCP
+  endpoint 403s on every reconnect. Re-enable by setting the env var and
+  flipping the flag back to `true`. The tool grant on `code-reviewer`
+  stays but is inert while disabled. Deliberately has no `Skill` tool — it
+  stays read-only by construction and granting `Skill` would break that
+  guarantee.
 - Most non-review department agents were granted the generic `Skill` tool
   (2026-07-29, extended to `finance-lead`/`support-lead`/`qa-lead` when
   added), which exposes every installed skill, not a curated subset —
