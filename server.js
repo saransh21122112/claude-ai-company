@@ -35,7 +35,14 @@ const server = http.createServer((req, res) => {
   if (url.pathname === "/api/activity") {
     const limit = Number(url.searchParams.get("limit")) || 50;
     const events = readActivity(limit);
-    res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
+    // Allow the graph pages to poll this from a file:// origin too (double-
+    // clicking the HTML directly, not just visiting http://localhost:8643).
+    // This is a read-only, localhost-only dev endpoint, so a wildcard is fine.
+    res.writeHead(200, {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      "Access-Control-Allow-Origin": "*",
+    });
     res.end(JSON.stringify({ events }));
     return;
   }

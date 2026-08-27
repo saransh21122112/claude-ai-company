@@ -610,6 +610,11 @@
   // the LAYER_LABELS fractions above, not a fixed name — see columnPad().
   let specialistsHeaderY = 34;
   let toolsHeaderY = 34;
+  // Set by layout() each pass — the Tools column's actual x, shifted left of
+  // its default fraction when that default would land under the feed panel
+  // (see layout()'s toolColX computation). Read by the header-draw loop so
+  // the "TOOLS" label tracks the shifted column instead of drifting from it.
+  let toolColX = 0;
 
   function drawBackdrop() {
     const grad = bgCtx.createRadialGradient(W * 0.5, H * 0.4, 0, W * 0.5, H * 0.4, Math.max(W, H) * 0.8);
@@ -655,9 +660,8 @@
     // (tools) column added further right, the tools column is usually the
     // one actually under the panel now, so this checks each column's real
     // x instead of assuming which one it is.
-    function columnPad(colFrac) {
+    function columnPad(colX) {
       if (window.innerWidth <= MOBILE_BREAK) return { top: padY, headerY: 34 };
-      const colX = W * colFrac;
       const feedRect = feedEl.getBoundingClientRect();
       const underFeed = colX >= feedRect.left - 30 && colX <= feedRect.right + 30;
       if (!underFeed) return { top: padY, headerY: headerYFor(colX) };
@@ -665,21 +669,37 @@
       return { top, headerY: top - 20 };
     }
 
-    const specPad = columnPad(LAYER_LABELS[2].x);
+    const specColX = W * LAYER_LABELS[2].x;
+    const specPad = columnPad(specColX);
     specialistsHeaderY = specPad.headerY;
     const subUsableH = Math.max(1, H - specPad.top - padY);
     subOrder.forEach((id, i) => {
       const n = byId[id];
-      n.x = W * LAYER_LABELS[2].x;
+      n.x = specColX;
       n.y = subOrder.length === 1 ? H / 2 : specPad.top + subUsableH * (i / (subOrder.length - 1));
     });
 
-    const toolPad = columnPad(LAYER_LABELS[3].x);
+    // Tools column: shift left instead of shrinking vertically when the
+    // default fraction lands under the feed panel — clamp to just clear the
+    // panel, floored against the Specialists column so it can never collide
+    // with it on narrow viewports. Once shifted clear, columnPad() (re-run
+    // against this actual x) reports "not under feed" and Tools gets the
+    // same full-height treatment as Departments/Specialists.
+    const MARGIN = 36, MIN_GAP = 36;
+    toolColX = W * LAYER_LABELS[3].x;
+    if (window.innerWidth > MOBILE_BREAK) {
+      const feedRect = feedEl.getBoundingClientRect();
+      const underFeed = toolColX >= feedRect.left - 30 && toolColX <= feedRect.right + 30;
+      if (underFeed) toolColX = Math.min(toolColX, feedRect.left - MARGIN);
+      toolColX = Math.max(toolColX, specColX + MIN_GAP);
+    }
+
+    const toolPad = columnPad(toolColX);
     toolsHeaderY = toolPad.headerY;
     const toolUsableH = Math.max(1, H - toolPad.top - padY);
     toolOrder.forEach((id, i) => {
       const n = byId[id];
-      n.x = W * LAYER_LABELS[3].x;
+      n.x = toolColX;
       n.y = toolOrder.length === 1 ? H / 2 : toolPad.top + toolUsableH * (i / (toolOrder.length - 1));
     });
 
@@ -931,10 +951,11 @@
     ctx.font = "700 10px " + getComputedStyle(document.documentElement).getPropertyValue("--sans");
     LAYER_LABELS.forEach(l => {
       ctx.fillStyle = "rgba(94,234,212,0.55)";
+      const x = l.text === "TOOLS" ? toolColX : W * l.x;
       const y = l.text === "SPECIALISTS" ? specialistsHeaderY
         : l.text === "TOOLS" ? toolsHeaderY
-        : headerYFor(W * l.x);
-      ctx.fillText(l.text, W * l.x, y);
+        : headerYFor(x);
+      ctx.fillText(l.text, x, y);
     });
 
     ctx.restore();
